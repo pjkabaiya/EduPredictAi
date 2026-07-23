@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -22,7 +22,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <ThemeProvider>
         <AuthProvider>
           <PredictionProvider>
@@ -56,6 +56,6 @@ export default function App() {
           </PredictionProvider>
         </AuthProvider>
       </ThemeProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

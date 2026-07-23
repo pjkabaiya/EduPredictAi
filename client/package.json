@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
+    "build": "vite build && node -e \"const f=require('fs');f.copyFileSync('dist/index.html','dist/404.html');let h=f.readFileSync('dist/404.html','utf8');const s='<script>\\n(function(){var base=\\'/EduPredictAi\\';var path=location.pathname.replace(base,\\'\\');if(path&&path.indexOf(\\'#\\')!==0){var hashPath=path.replace(/^\\//,\\'\\');location.replace(base+\\'/\\\"/+hashPath+location.search);}})();\\n<\\/script>';h=h.replace('</head>',s+'</head>');f.writeFileSync('dist/404.html',h);console.log('404.html with redirect');\"",
     "preview": "vite preview",
     "lint": "eslint ."
   },
