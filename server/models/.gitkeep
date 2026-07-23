@@ -1,0 +1,9 @@
+# Placeholder directory for ML model files (Kenyan Academic Context)
+#
+# Target: University Grade Prediction (A, B, C, D, F)
+# Features: KCPE marks, KCSE grade, study hours, attendance, etc.
+#
+# To integrate the real model, place these files here:
+#   student_model.pkl  - Trained Random Forest classifier
+#   scaler.pkl         - Feature scaler/standardizer
+#   label_encoder.pkl  - Label encoder (A, B, C, D, F)

@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+*.egg
+.venv/
+venv/
+
+# Environment files
+.env
+*.env.local
+firebase-service-account.json
+
+# Node
+node_modules/
+client/dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+server_out.log
+server_out2.log
+
+# Vite cache
+client/node_modules/.vite/
+
+nul
