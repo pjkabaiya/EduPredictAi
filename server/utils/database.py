@@ -2,7 +2,7 @@ import os
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
-MONGO_URI = os.getenv("MONGO_URI", "MONGO_URI_PLACEHOLDER")
+MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("MONGO_DB_NAME", "edupredict_ai")
 
 client: MongoClient | None = None
