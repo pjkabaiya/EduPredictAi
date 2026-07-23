@@ -8,13 +8,12 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    const stored = localStorage.getItem('edupredict_theme');
+    return stored !== null ? stored === 'dark' : true;
+  });
 
   useEffect(() => {
-    const stored = localStorage.getItem('edupredict_theme');
-    if (stored !== null) {
-      setIsDark(stored === 'dark');
-    }
     document.documentElement.classList.toggle('dark', isDark);
   }, [isDark]);
 

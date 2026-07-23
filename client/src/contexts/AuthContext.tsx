@@ -1,9 +1,14 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { auth } from '../firebase';
-import type { User } from '../types';
+
+interface AppUser {
+  id: string;
+  name: string;
+  email: string;
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: AppUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -14,24 +19,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-function mapFirebaseUser(fu: NonNullable<ReturnType<typeof auth.onAuthStateChanged extends (cb: infer C) => any ? never : never>>): User {
-  return {
-    id: fu.uid,
-    name: fu.displayName || fu.email?.split('@')[0] || 'User',
-    email: fu.email || '',
-  };
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!auth) {
+    const a = auth;
+    if (!a) {
       setIsLoading(false);
       return;
     }
-    const unsub = auth.onAuthStateChanged((firebaseUser) => {
+    const unsub = a.onAuthStateChanged((firebaseUser: any) => {
       if (firebaseUser) {
         setUser({
           id: firebaseUser.uid,
@@ -47,26 +45,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    if (!auth) throw new Error('Auth not available');
-    await auth.signInWithEmailAndPassword(email, password);
+    const a = auth;
+    if (!a) throw new Error('Auth not available');
+    await a.signInWithEmailAndPassword(email, password);
   };
 
   const register = async (name: string, email: string, password: string) => {
-    if (!auth) throw new Error('Auth not available');
-    const u = await auth.createUserWithEmailAndPassword(email, password);
-    if (u.updateProfile) {
-      await u.updateProfile({ displayName: name });
+    const a = auth;
+    if (!a) throw new Error('Auth not available');
+    const u = await a.createUserWithEmailAndPassword(email, password);
+    const userAny = u as any;
+    if (userAny.updateProfile) {
+      await userAny.updateProfile({ displayName: name });
     }
   };
 
   const logout = async () => {
-    if (!auth) return;
-    await auth.signOut();
+    const a = auth;
+    if (!a) return;
+    await a.signOut();
   };
 
   const getIdToken = async (): Promise<string | null> => {
-    if (!auth?.currentUser) return null;
-    return auth.currentUser.getIdToken();
+    const a = auth;
+    if (!a?.currentUser) return null;
+    return a.currentUser.getIdToken();
   };
 
   return (

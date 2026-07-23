@@ -4,8 +4,9 @@ const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 async function getAuthHeaders(): Promise<Record<string, string>> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (auth?.currentUser) {
-    const token = await auth.currentUser.getIdToken();
+  const a: any = auth;
+  if (a?.currentUser) {
+    const token = await a.currentUser.getIdToken();
     if (token) headers['Authorization'] = `Bearer ${token}`;
   }
   return headers;

@@ -99,5 +99,5 @@ async function loadFirebaseSDK() {
 
 loadFirebaseSDK();
 
-const auth = firebaseAuth;
+const auth: FirebaseAuth | null = firebaseAuth;
 export { firebaseAuth, auth, onFirebaseReady };
