@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: edupredict-ai-api
+    runtime: python
+    plan: free
+    region: ohio
+    buildCommand: pip install -r server/requirements.txt
+    startCommand: cd server && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: edupredict_ai
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
