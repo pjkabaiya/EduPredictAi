@@ -51,6 +51,11 @@ const team = [
   { name: 'John Peter Kabaiya', role: 'Deployment & Full Stack Lead', id: 'INTE/MK/1082/09/23', initials: 'JP' },
 ];
 
+function scrollTo(id: string) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
 export function LandingPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -67,11 +72,11 @@ export function LandingPage() {
             <GraduationCap className="w-6 h-6 text-emerald-400" />
             <span className="font-bold text-lg">EduPredict<span className="text-emerald-400">AI</span></span>
           </div>
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-navy-300 hover:text-white transition-colors">Features</a>
-            <a href="#how-it-works" className="text-sm text-navy-300 hover:text-white transition-colors">How It Works</a>
-            <a href="#benefits" className="text-sm text-navy-300 hover:text-white transition-colors">Benefits</a>
-            <a href="#team" className="text-sm text-navy-300 hover:text-white transition-colors">Team</a>
+<div className="hidden md:flex items-center gap-8">
+            <button onClick={() => scrollTo('features')} className="text-sm text-navy-300 hover:text-white transition-colors">Features</button>
+            <button onClick={() => scrollTo('how-it-works')} className="text-sm text-navy-300 hover:text-white transition-colors">How It Works</button>
+            <button onClick={() => scrollTo('benefits')} className="text-sm text-navy-300 hover:text-white transition-colors">Benefits</button>
+            <button onClick={() => scrollTo('team')} className="text-sm text-navy-300 hover:text-white transition-colors">Team</button>
           </div>
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
@@ -92,11 +97,11 @@ export function LandingPage() {
           </div>
         </div>
         {mobileMenu && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="md:hidden border-t border-white/5 bg-navy-900 px-6 py-4 space-y-3">
-            <a href="#features" className="block text-sm text-navy-300 hover:text-white" onClick={() => setMobileMenu(false)}>Features</a>
-            <a href="#how-it-works" className="block text-sm text-navy-300 hover:text-white" onClick={() => setMobileMenu(false)}>How It Works</a>
-            <a href="#benefits" className="block text-sm text-navy-300 hover:text-white" onClick={() => setMobileMenu(false)}>Benefits</a>
-            <a href="#team" className="block text-sm text-navy-300 hover:text-white" onClick={() => setMobileMenu(false)}>Team</a>
+<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="md:hidden border-t border-white/5 bg-navy-900 px-6 py-4 space-y-3">
+            <button onClick={() => { scrollTo('features'); setMobileMenu(false); }} className="block text-sm text-navy-300 hover:text-white">Features</button>
+            <button onClick={() => { scrollTo('how-it-works'); setMobileMenu(false); }} className="block text-sm text-navy-300 hover:text-white">How It Works</button>
+            <button onClick={() => { scrollTo('benefits'); setMobileMenu(false); }} className="block text-sm text-navy-300 hover:text-white">Benefits</button>
+            <button onClick={() => { scrollTo('team'); setMobileMenu(false); }} className="block text-sm text-navy-300 hover:text-white">Team</button>
             <div className="pt-2 flex gap-3">
               <button onClick={() => { setMobileMenu(false); navigate('/login'); }} className="flex-1 px-4 py-2 border border-white/10 text-white rounded-lg text-sm">Sign In</button>
               <button onClick={() => { setMobileMenu(false); navigate('/register'); }} className="flex-1 px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm">Get Started</button>
@@ -230,11 +235,11 @@ export function LandingPage() {
               <GraduationCap className="w-5 h-5 text-emerald-400" />
               <span className="font-bold text-white">EduPredict<span className="text-emerald-400">AI</span></span>
             </div>
-            <div className="flex items-center gap-6 text-sm text-navy-400">
-              <a href="#features" className="hover:text-white transition-colors">Features</a>
-              <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
-              <a href="#team" className="hover:text-white transition-colors">Team</a>
-              <a href="/about" className="hover:text-white transition-colors">About</a>
+<div className="flex items-center gap-6 text-sm text-navy-400">
+              <button onClick={() => scrollTo('features')} className="hover:text-white transition-colors">Features</button>
+              <button onClick={() => scrollTo('how-it-works')} className="hover:text-white transition-colors">How It Works</button>
+              <button onClick={() => scrollTo('team')} className="hover:text-white transition-colors">Team</button>
+              <button onClick={() => navigate('/about')} className="hover:text-white transition-colors">About</button>
             </div>
             <div className="flex items-center gap-4">
               <Github className="w-5 h-5 text-navy-400 hover:text-white cursor-pointer transition-colors" />
