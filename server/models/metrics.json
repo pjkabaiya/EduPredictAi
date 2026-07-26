@@ -1,0 +1,164 @@
+{
+  "accuracy": 0.8101,
+  "precision": 0.815,
+  "recall": 0.8101,
+  "f1_score": 0.8108,
+  "roc_auc": 0.7963,
+  "best_model": "Decision Tree",
+  "candidates": [
+    "Logistic Regression",
+    "Decision Tree",
+    "Random Forest",
+    "SVM",
+    "KNN"
+  ],
+  "confusion_matrix": [
+    [
+      30,
+      1,
+      7
+    ],
+    [
+      3,
+      12,
+      0
+    ],
+    [
+      4,
+      0,
+      22
+    ]
+  ],
+  "classification_report": {
+    "Average Performance": {
+      "precision": 0.8108108108108109,
+      "recall": 0.7894736842105263,
+      "f1-score": 0.8,
+      "support": 38.0
+    },
+    "High Performance": {
+      "precision": 0.9230769230769231,
+      "recall": 0.8,
+      "f1-score": 0.8571428571428571,
+      "support": 15.0
+    },
+    "Low Performance": {
+      "precision": 0.7586206896551724,
+      "recall": 0.8461538461538461,
+      "f1-score": 0.8,
+      "support": 26.0
+    },
+    "accuracy": 0.810126582278481,
+    "macro avg": {
+      "precision": 0.8308361411809688,
+      "recall": 0.8118758434547909,
+      "f1-score": 0.8190476190476191,
+      "support": 79.0
+    },
+    "weighted avg": {
+      "precision": 0.8149506656708752,
+      "recall": 0.810126582278481,
+      "f1-score": 0.8108499095840869,
+      "support": 79.0
+    }
+  },
+  "n_estimators": 0,
+  "max_depth": 10,
+  "training_samples": 316,
+  "test_samples": 79,
+  "cross_validation_score": 0.8607,
+  "feature_importance": [
+    {
+      "feature": "g2",
+      "importance": 0.7844
+    },
+    {
+      "feature": "reason",
+      "importance": 0.0315
+    },
+    {
+      "feature": "health",
+      "importance": 0.0281
+    },
+    {
+      "feature": "failures",
+      "importance": 0.0219
+    },
+    {
+      "feature": "dalc",
+      "importance": 0.0175
+    },
+    {
+      "feature": "famsize",
+      "importance": 0.0148
+    },
+    {
+      "feature": "fjob",
+      "importance": 0.0146
+    },
+    {
+      "feature": "age",
+      "importance": 0.0134
+    },
+    {
+      "feature": "medu",
+      "importance": 0.0118
+    },
+    {
+      "feature": "g1",
+      "importance": 0.0117
+    }
+  ],
+  "model_comparison": [
+    {
+      "model": "Decision Tree",
+      "accuracy": 0.8101,
+      "precision": 0.815,
+      "recall": 0.8101,
+      "f1_score": 0.8108,
+      "roc_auc": 0.8529,
+      "cv_mean": 0.8607,
+      "cv_std": 0.0275
+    },
+    {
+      "model": "Random Forest",
+      "accuracy": 0.8101,
+      "precision": 0.816,
+      "recall": 0.8101,
+      "f1_score": 0.812,
+      "roc_auc": 0.9596,
+      "cv_mean": 0.902,
+      "cv_std": 0.0336
+    },
+    {
+      "model": "Logistic Regression",
+      "accuracy": 0.7595,
+      "precision": 0.763,
+      "recall": 0.7595,
+      "f1_score": 0.7597,
+      "roc_auc": 0.9436,
+      "cv_mean": 0.8261,
+      "cv_std": 0.0353
+    },
+    {
+      "model": "SVM",
+      "accuracy": 0.6962,
+      "precision": 0.7236,
+      "recall": 0.6962,
+      "f1_score": 0.682,
+      "roc_auc": 0.9132,
+      "cv_mean": 0.7848,
+      "cv_std": 0.0639
+    },
+    {
+      "model": "KNN",
+      "accuracy": 0.5696,
+      "precision": 0.6077,
+      "recall": 0.5696,
+      "f1_score": 0.5509,
+      "roc_auc": 0.7963,
+      "cv_mean": 0.6521,
+      "cv_std": 0.034
+    }
+  ]
+}

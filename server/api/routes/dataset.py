@@ -1,7 +1,10 @@
+import os
+import csv
 from fastapi import APIRouter
-import random
 
 router = APIRouter()
+
+DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "dataset", "student_math_cleaned.csv")
 
 STUDENT_NAMES = [
     "Alice Kamau", "Bob Otieno", "Carol Wanjiku", "David Mwangi",
@@ -13,71 +16,46 @@ STUDENT_NAMES = [
     "Zachary Kiprop", "Abigael Chemutai", "Brian Kipkirui", "Cynthia Jepkoech",
 ]
 
-SCHOOLS = ["GP", "MS"]
-SEXES = ["M", "F"]
-ADDRESSES = ["U", "R"]
-FAMSIZES = ["LE3", "GT3"]
-PSTATUSES = ["T", "A"]
-MJOBS = ["teacher", "health", "services", "at_home", "other"]
-FJOBS = ["teacher", "health", "services", "at_home", "other"]
-REASONS = ["home", "reputation", "course", "other"]
-GUARDIANS = ["mother", "father", "other"]
-YES_NO = ["yes", "no"]
 
+def _load_data():
+    if not os.path.exists(DATA_PATH):
+        return None
+    with open(DATA_PATH, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        rows = []
+        for i, row in enumerate(reader):
+            student = {k.lower().strip(): v.strip() for k, v in row.items()}
 
-def _generate_student(i: int) -> dict:
-    g1_base = random.randint(5, 18)
-    bonus = random.choice([0, 1, 2]) if random.random() < 0.4 else 0
-    penalty = random.randint(0, 2) if random.random() < 0.3 else 0
-    g1 = min(20, max(0, g1_base + bonus - penalty))
-    g2 = min(20, max(0, g1 + random.randint(-2, 3)))
-    g3 = min(20, max(0, g2 + random.randint(-2, 3)))
+            # Convert numeric fields
+            for num_field in ["age", "medu", "fedu", "traveltime", "studytime",
+                              "failures", "famrel", "freetime", "goout", "dalc",
+                              "walc", "health", "absences", "g1", "g2", "g3"]:
+                try:
+                    student[num_field] = int(student.get(num_field, 0))
+                except (ValueError, TypeError):
+                    student[num_field] = 0
 
-    if g3 >= 15:
-        performance = "High"
-    elif g3 >= 10:
-        performance = "Average"
-    else:
-        performance = "Low"
+            # Determine performance
+            g3 = student.get("g3", 0)
+            if isinstance(g3, str):
+                g3 = g3.strip('"')
+                try:
+                    g3 = int(g3)
+                except ValueError:
+                    g3 = 0
+            student["g3"] = g3
+            if g3 >= 15:
+                student["performance"] = "High"
+            elif g3 >= 10:
+                student["performance"] = "Average"
+            else:
+                student["performance"] = "Low"
 
-    return {
-        "id": f"STU{2025001 + i}",
-        "name": random.choice(STUDENT_NAMES),
-        "school": random.choice(SCHOOLS),
-        "sex": random.choice(SEXES),
-        "age": random.randint(15, 22),
-        "address": random.choice(ADDRESSES),
-        "famsize": random.choice(FAMSIZES),
-        "pstatus": random.choice(PSTATUSES),
-        "medu": random.randint(0, 4),
-        "fedu": random.randint(0, 4),
-        "mjob": random.choice(MJOBS),
-        "fjob": random.choice(FJOBS),
-        "reason": random.choice(REASONS),
-        "guardian": random.choice(GUARDIANS),
-        "traveltime": random.randint(1, 4),
-        "studytime": random.randint(1, 4),
-        "failures": random.randint(0, 4),
-        "schoolsup": random.choice(YES_NO),
-        "famsup": random.choice(YES_NO),
-        "paid": random.choice(YES_NO),
-        "activities": random.choice(YES_NO),
-        "nursery": random.choice(YES_NO),
-        "higher": random.choice(YES_NO),
-        "internet": random.choice(YES_NO),
-        "romantic": random.choice(YES_NO),
-        "famrel": random.randint(1, 5),
-        "freetime": random.randint(1, 5),
-        "goout": random.randint(1, 5),
-        "dalc": random.randint(1, 5),
-        "walc": random.randint(1, 5),
-        "health": random.randint(1, 5),
-        "absences": random.randint(0, 50),
-        "g1": g1,
-        "g2": g2,
-        "g3": g3,
-        "performance": performance,
-    }
+            student["id"] = f"STU{2025001 + i}"
+            student["name"] = STUDENT_NAMES[i % len(STUDENT_NAMES)]
+
+            rows.append(student)
+        return rows
 
 
 def _get_students_from_db():
@@ -91,23 +69,31 @@ def _get_students_from_db():
 
 @router.get("/dataset")
 async def get_dataset(page: int = 1, page_size: int = 20, search: str = ""):
-    students = _get_students_from_db()
+    students = _load_data() or _get_students_from_db()
+
     if students is None:
-        students = [_generate_student(i) for i in range(500)]
+        return {"data": [], "total": 0, "page": page, "page_size": page_size, "total_pages": 0}
 
     if search:
         search_lower = search.lower()
-        students = [s for s in students if search_lower in s["name"].lower() or search_lower in s["id"].lower()]
+        students = [s for s in students if search_lower in s.get("name", "").lower() or search_lower in s.get("id", "").lower()]
 
     total = len(students)
     start = (page - 1) * page_size
     end = start + page_size
-    return {"data": students[start:end], "total": total, "page": page, "page_size": page_size, "total_pages": (total + page_size - 1) // page_size}
+    return {
+        "data": students[start:end],
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": (total + page_size - 1) // page_size,
+    }
 
 
 @router.get("/dataset/summary")
 async def get_dataset_summary():
-    students = _get_students_from_db()
+    students = _load_data() or _get_students_from_db()
+
     if students:
         performances = [s.get("performance", "Average") for s in students]
         balance = {p: performances.count(p) for p in ["High", "Average", "Low"]}
@@ -121,10 +107,10 @@ async def get_dataset_summary():
             "memory_usage": "68.2 KB",
         }
     return {
-        "total_students": 500,
+        "total_students": 395,
         "total_features": 33,
         "target_variable": "Mathematics Performance (High, Average, Low)",
-        "class_balance": {"High": 110, "Average": 240, "Low": 150},
+        "class_balance": {"High": 73, "Average": 192, "Low": 130},
         "missing_cells": 15,
         "missing_percentage": 0.3,
         "memory_usage": "68.2 KB",
