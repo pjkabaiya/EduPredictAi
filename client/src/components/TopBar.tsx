@@ -23,7 +23,7 @@ export function TopBar() {
   const { isDark, toggle } = useTheme();
   const [showMenu, setShowMenu] = useState(false);
 
-  const title = pageTitles[location.pathname] || 'EduPredict AI';
+  const title = pageTitles[location.pathname] || 'MathPredict AI';
 
   return (
     <header className="h-16 border-b border-white/5 bg-navy-900/40 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-40">

@@ -16,8 +16,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="EduPredict AI",
-    description="Student Academic Performance Prediction System Using Machine Learning",
+    title="MathPredict AI",
+    description="Mathematics Performance Prediction System Using Machine Learning (UCI Student Performance Dataset)",
     version="1.0.0",
     lifespan=lifespan,
 )

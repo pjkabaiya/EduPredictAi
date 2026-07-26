@@ -13,58 +13,70 @@ STUDENT_NAMES = [
     "Zachary Kiprop", "Abigael Chemutai", "Brian Kipkirui", "Cynthia Jepkoech",
 ]
 
-GENDERS = ["Male", "Female"]
-INTERNET_ACCESS = ["Yes", "No"]
-PARENT_EDUCATION = ["Primary", "Secondary", "Diploma", "Bachelor's", "Master's", "PhD"]
-EXTRACURRICULAR = ["Yes", "No"]
-KCSE_GRADES = ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "E"]
-UNI_GRADES = ["A", "B", "C", "D", "F"]
-
-KCSE_SCORE = {g: i for i, g in enumerate(reversed(KCSE_GRADES))}
+SCHOOLS = ["GP", "MS"]
+SEXES = ["M", "F"]
+ADDRESSES = ["U", "R"]
+FAMSIZES = ["LE3", "GT3"]
+PSTATUSES = ["T", "A"]
+MJOBS = ["teacher", "health", "services", "at_home", "other"]
+FJOBS = ["teacher", "health", "services", "at_home", "other"]
+REASONS = ["home", "reputation", "course", "other"]
+GUARDIANS = ["mother", "father", "other"]
+YES_NO = ["yes", "no"]
 
 
 def _generate_student(i: int) -> dict:
-    kcpe = random.randint(150, 500)
-    kcse = random.choice(KCSE_GRADES)
-    prev_grade = random.choice(UNI_GRADES)
-    study = round(random.uniform(5, 45), 1)
-    attendance = round(random.uniform(40, 100), 1)
-    assignments = round(random.uniform(30, 100), 1)
-    sleep = round(random.uniform(4, 10), 1)
-    age = random.randint(18, 30)
+    g1_base = random.randint(5, 18)
+    bonus = random.choice([0, 1, 2]) if random.random() < 0.4 else 0
+    penalty = random.randint(0, 2) if random.random() < 0.3 else 0
+    g1 = min(20, max(0, g1_base + bonus - penalty))
+    g2 = min(20, max(0, g1 + random.randint(-2, 3)))
+    g3 = min(20, max(0, g2 + random.randint(-2, 3)))
 
-    raw = (
-        kcpe / 500 * 0.15 + KCSE_SCORE[kcse] / 11 * 0.25 + study / 45 * 0.15
-        + attendance / 100 * 0.15 + assignments / 100 * 0.10
-        + ({"A": 4, "B": 3, "C": 2, "D": 1, "F": 0}[prev_grade]) / 4 * 0.20
-    )
-    if raw >= 0.78:
-        grade = "A"
-    elif raw >= 0.62:
-        grade = "B"
-    elif raw >= 0.45:
-        grade = "C"
-    elif raw >= 0.30:
-        grade = "D"
+    if g3 >= 15:
+        performance = "High"
+    elif g3 >= 10:
+        performance = "Average"
     else:
-        grade = "F"
+        performance = "Low"
 
     return {
         "id": f"STU{2025001 + i}",
         "name": random.choice(STUDENT_NAMES),
-        "age": age,
-        "gender": random.choice(GENDERS),
-        "kcpe_marks": kcpe,
-        "kcse_grade": kcse,
-        "university_previous_grade": prev_grade,
-        "study_hours_per_week": study,
-        "attendance_percentage": attendance,
-        "assignment_completion_rate": assignments,
-        "internet_access": random.choice(INTERNET_ACCESS),
-        "parent_education": random.choice(PARENT_EDUCATION),
-        "sleep_hours": sleep,
-        "extracurricular_activities": random.choice(EXTRACURRICULAR),
-        "predicted_grade": grade,
+        "school": random.choice(SCHOOLS),
+        "sex": random.choice(SEXES),
+        "age": random.randint(15, 22),
+        "address": random.choice(ADDRESSES),
+        "famsize": random.choice(FAMSIZES),
+        "pstatus": random.choice(PSTATUSES),
+        "medu": random.randint(0, 4),
+        "fedu": random.randint(0, 4),
+        "mjob": random.choice(MJOBS),
+        "fjob": random.choice(FJOBS),
+        "reason": random.choice(REASONS),
+        "guardian": random.choice(GUARDIANS),
+        "traveltime": random.randint(1, 4),
+        "studytime": random.randint(1, 4),
+        "failures": random.randint(0, 4),
+        "schoolsup": random.choice(YES_NO),
+        "famsup": random.choice(YES_NO),
+        "paid": random.choice(YES_NO),
+        "activities": random.choice(YES_NO),
+        "nursery": random.choice(YES_NO),
+        "higher": random.choice(YES_NO),
+        "internet": random.choice(YES_NO),
+        "romantic": random.choice(YES_NO),
+        "famrel": random.randint(1, 5),
+        "freetime": random.randint(1, 5),
+        "goout": random.randint(1, 5),
+        "dalc": random.randint(1, 5),
+        "walc": random.randint(1, 5),
+        "health": random.randint(1, 5),
+        "absences": random.randint(0, 50),
+        "g1": g1,
+        "g2": g2,
+        "g3": g3,
+        "performance": performance,
     }
 
 
@@ -97,23 +109,23 @@ async def get_dataset(page: int = 1, page_size: int = 20, search: str = ""):
 async def get_dataset_summary():
     students = _get_students_from_db()
     if students:
-        grades = [s.get("predicted_grade", "C") for s in students]
-        balance = {g: grades.count(g) for g in UNI_GRADES}
+        performances = [s.get("performance", "Average") for s in students]
+        balance = {p: performances.count(p) for p in ["High", "Average", "Low"]}
         return {
             "total_students": len(students),
-            "total_features": 12,
-            "target_variable": "Predicted University Grade",
+            "total_features": 33,
+            "target_variable": "Mathematics Performance (High, Average, Low)",
             "class_balance": balance,
-            "missing_cells": 18,
+            "missing_cells": 15,
             "missing_percentage": 0.3,
-            "memory_usage": "38.4 KB",
+            "memory_usage": "68.2 KB",
         }
     return {
         "total_students": 500,
-        "total_features": 12,
-        "target_variable": "Predicted University Grade",
-        "class_balance": {"A": 95, "B": 140, "C": 155, "D": 75, "F": 35},
-        "missing_cells": 18,
+        "total_features": 33,
+        "target_variable": "Mathematics Performance (High, Average, Low)",
+        "class_balance": {"High": 110, "Average": 240, "Low": 150},
+        "missing_cells": 15,
         "missing_percentage": 0.3,
-        "memory_usage": "38.4 KB",
+        "memory_usage": "68.2 KB",
     }

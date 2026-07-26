@@ -9,7 +9,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [isDark, setIsDark] = useState(() => {
-    const stored = localStorage.getItem('edupredict_theme');
+    const stored = localStorage.getItem('mathpredict_theme');
     return stored !== null ? stored === 'dark' : true;
   });
 
@@ -20,7 +20,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const toggle = () => {
     setIsDark((prev) => {
       const next = !prev;
-      localStorage.setItem('edupredict_theme', next ? 'dark' : 'light');
+      localStorage.setItem('mathpredict_theme', next ? 'dark' : 'light');
       return next;
     });
   };

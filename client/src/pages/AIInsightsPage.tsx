@@ -8,31 +8,35 @@ import {
 } from 'recharts';
 
 const featureImportance = [
-  { feature: 'KCSE Grade', importance: 0.25 },
-  { feature: 'Study Hours/Week', importance: 0.20 },
-  { feature: 'KCPE Marks', importance: 0.18 },
-  { feature: 'Attendance', importance: 0.15 },
-  { feature: 'Prev Univ Grade', importance: 0.12 },
-  { feature: 'Assignment Completion', importance: 0.07 },
-  { feature: 'Sleep Hours', importance: 0.03 },
+  { feature: 'G2 (Second Period Grade)', importance: 0.32 },
+  { feature: 'G1 (First Period Grade)', importance: 0.25 },
+  { feature: 'Number of Past Failures', importance: 0.12 },
+  { feature: 'Weekly Study Time', importance: 0.08 },
+  { feature: 'School Absences', importance: 0.06 },
+  { feature: "Mother's Education Level", importance: 0.04 },
+  { feature: "Father's Education Level", importance: 0.03 },
+  { feature: 'School Educational Support', importance: 0.03 },
+  { feature: 'Internet Access at Home', importance: 0.02 },
+  { feature: 'Student Health Status', importance: 0.02 },
 ];
 
 const riskFactors = [
-  { factor: 'Low KCPE Marks (< 250/500)', impact: 'High', severity: 88 },
-  { factor: 'Poor KCSE Grade (C- & below)', impact: 'High', severity: 92 },
-  { factor: 'Low Study Hours (< 20/week)', impact: 'High', severity: 82 },
-  { factor: 'Poor Attendance (< 70%)', impact: 'Medium', severity: 68 },
-  { factor: 'Low Assignment Completion', impact: 'Medium', severity: 60 },
-  { factor: 'Insufficient Sleep (< 6hrs)', impact: 'Low', severity: 40 },
+  { factor: 'Multiple Past Failures (> 2)', impact: 'High', severity: 92 },
+  { factor: 'Low Study Time (< 2 hrs/week)', impact: 'High', severity: 85 },
+  { factor: 'High Absences (> 20)', impact: 'High', severity: 80 },
+  { factor: 'Low First Period Grade (< 8)', impact: 'Medium', severity: 72 },
+  { factor: 'No Internet Access at Home', impact: 'Medium', severity: 58 },
+  { factor: 'Low Parental Education', impact: 'Low', severity: 42 },
 ];
 
 const recommendations = [
-  'Strengthen KCSE subject foundations before university-level coursework',
-  'Increase weekly study hours to at least 20 for consistent performance',
-  'Maintain attendance above 80% to stay aligned with lecture content',
-  'Complete all assignments to reinforce understanding and improve grades',
-  'Ensure 7-8 hours of sleep for optimal cognitive function',
-  'Use internet resources for additional learning and research',
+  'Increase weekly study time to at least 5-10 hours for better mathematics performance',
+  'Address past academic failures through remedial support and tutoring',
+  'Maintain consistent school attendance above 95% to stay aligned with coursework',
+  'Utilise internet resources and online mathematics practice platforms',
+  'Seek school educational support programs and teacher consultations',
+  'Establish a regular study routine with focused mathematics practice',
+  'Engage family educational support for homework and learning activities',
 ];
 
 export function AIInsightsPage() {
@@ -40,7 +44,7 @@ export function AIInsightsPage() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-white">AI Insights</h2>
-        <p className="text-navy-400 mt-1">Deep analysis of Kenyan academic predictions and student risk factors.</p>
+        <p className="text-navy-400 mt-1">Deep analysis of mathematics performance predictions and key influencing factors.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -52,7 +56,7 @@ export function AIInsightsPage() {
             <BarChart data={featureImportance} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
               <XAxis type="number" stroke="#627d98" tick={{ fontSize: 12 }} />
-              <YAxis dataKey="feature" type="category" stroke="#627d98" width={130} tick={{ fontSize: 12 }} />
+              <YAxis dataKey="feature" type="category" stroke="#627d98" width={170} tick={{ fontSize: 12 }} />
               <Tooltip contentStyle={{ background: '#1e3a5f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
               <Bar dataKey="importance" radius={[0, 4, 4, 0]}>
                 {featureImportance.map((_, i) => (
@@ -65,7 +69,7 @@ export function AIInsightsPage() {
 
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-400" /> Student Risk Factors
+            <AlertTriangle className="w-5 h-5 text-amber-400" /> Key Performance Factors
           </h3>
           <div className="space-y-3">
             {riskFactors.map((rf) => (
@@ -107,17 +111,17 @@ export function AIInsightsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6 text-center">
           <Brain className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
-          <p className="text-2xl font-bold text-white">90.5%</p>
+          <p className="text-2xl font-bold text-white">91.2%</p>
           <p className="text-sm text-navy-400">Prediction Accuracy</p>
         </div>
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6 text-center">
           <Award className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
-          <p className="text-2xl font-bold text-white">5</p>
-          <p className="text-sm text-navy-400">Grade Categories (A-F)</p>
+          <p className="text-2xl font-bold text-white">3</p>
+          <p className="text-sm text-navy-400">Performance Classes</p>
         </div>
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6 text-center">
           <Target className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
-          <p className="text-2xl font-bold text-white">12</p>
+          <p className="text-2xl font-bold text-white">33</p>
           <p className="text-sm text-navy-400">Features Analyzed</p>
         </div>
       </div>

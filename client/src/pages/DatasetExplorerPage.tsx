@@ -60,7 +60,7 @@ export function DatasetExplorerPage() {
     const blob = new Blob([`${headers}\n${rows}`], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'edupredict_dataset.csv'; a.click();
+    a.href = url; a.download = 'mathpredict_dataset.csv'; a.click();
     URL.revokeObjectURL(url);
   };
 
@@ -78,7 +78,7 @@ export function DatasetExplorerPage() {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-white">Dataset Explorer</h2>
-          <p className="text-navy-400 mt-1">Browse and explore the student performance dataset.</p>
+          <p className="text-navy-400 mt-1">Browse and explore the UCI Student Performance (Mathematics) dataset.</p>
         </div>
         <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-all">
           <Download className="w-4 h-4" /> Export CSV
@@ -90,7 +90,7 @@ export function DatasetExplorerPage() {
           {[
             { label: 'Total Students', value: summary.total_students },
             { label: 'Features', value: summary.total_features },
-            { label: 'Target', value: 'Performance' },
+            { label: 'Target', value: 'Math Performance' },
             { label: 'Missing Cells', value: summary.missing_cells },
             { label: 'Memory', value: summary.memory_usage },
           ].map((s) => (
@@ -120,37 +120,37 @@ export function DatasetExplorerPage() {
               <thead className="bg-navy-900/30">
                 <tr>
                   <SortHeader label="ID" field="id" />
-                  <SortHeader label="Name" field="name" />
+                  <SortHeader label="School" field="school" />
+                  <SortHeader label="Sex" field="sex" />
                   <SortHeader label="Age" field="age" />
-                  <SortHeader label="Gender" field="gender" />
-                  <SortHeader label="KCPE Marks" field="kcpe_marks" />
-                  <SortHeader label="KCSE Grade" field="kcse_grade" />
-                  <SortHeader label="Study Hrs/Wk" field="study_hours_per_week" />
-                  <SortHeader label="Attendance" field="attendance_percentage" />
-                  <SortHeader label="Prev Grade" field="university_previous_grade" />
-                  <SortHeader label="Predicted" field="predicted_grade" />
+                  <SortHeader label="Study Time" field="studytime" />
+                  <SortHeader label="Failures" field="failures" />
+                  <SortHeader label="Absences" field="absences" />
+                  <SortHeader label="G1" field="g1" />
+                  <SortHeader label="G2" field="g2" />
+                  <SortHeader label="G3" field="g3" />
+                  <SortHeader label="Performance" field="performance" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {sortedStudents.map((s) => (
                   <tr key={s.id} className="hover:bg-white/5 transition-colors">
                     <td className="p-3 text-navy-400 font-mono text-xs">{s.id}</td>
-                    <td className="p-3 text-white font-medium">{s.name}</td>
+                    <td className="p-3 text-white font-medium">{s.school}</td>
+                    <td className="p-3 text-navy-300">{s.sex}</td>
                     <td className="p-3 text-navy-300">{s.age}</td>
-                    <td className="p-3 text-navy-300">{s.gender}</td>
-                    <td className="p-3 text-navy-300">{s.kcpe_marks}/500</td>
-                    <td className="p-3 text-navy-300 font-mono">{s.kcse_grade}</td>
-                    <td className="p-3 text-navy-300">{s.study_hours_per_week}h</td>
-                    <td className="p-3 text-navy-300">{s.attendance_percentage}%</td>
-                    <td className="p-3 text-navy-300">{s.university_previous_grade}</td>
+                    <td className="p-3 text-navy-300">{s.studytime}</td>
+                    <td className="p-3 text-navy-300">{s.failures}</td>
+                    <td className="p-3 text-navy-300">{s.absences}</td>
+                    <td className="p-3 text-navy-300 font-mono">{s.g1}</td>
+                    <td className="p-3 text-navy-300 font-mono">{s.g2}</td>
+                    <td className="p-3 text-navy-300 font-mono">{s.g3}</td>
                     <td className="p-3">
                       <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                        s.predicted_grade === 'A' ? 'bg-emerald-500/10 text-emerald-400' :
-                        s.predicted_grade === 'B' ? 'bg-blue-500/10 text-blue-400' :
-                        s.predicted_grade === 'C' ? 'bg-amber-500/10 text-amber-400' :
-                        s.predicted_grade === 'D' ? 'bg-orange-500/10 text-orange-400' :
+                        s.performance === 'High' ? 'bg-emerald-500/10 text-emerald-400' :
+                        s.performance === 'Average' ? 'bg-amber-500/10 text-amber-400' :
                         'bg-red-500/10 text-red-400'
-                      }`}>{s.predicted_grade}</span>
+                      }`}>{s.performance}</span>
                     </td>
                   </tr>
                 ))}

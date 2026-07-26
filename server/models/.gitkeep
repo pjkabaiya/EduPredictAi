@@ -1,9 +1,9 @@
-# Placeholder directory for ML model files (Kenyan Academic Context)
+# Placeholder directory for ML model files (Mathematics Performance Prediction)
 #
-# Target: University Grade Prediction (A, B, C, D, F)
-# Features: KCPE marks, KCSE grade, study hours, attendance, etc.
+# Target: Mathematics Performance (High, Average, Low)
+# Features: UCI Student Performance dataset
 #
 # To integrate the real model, place these files here:
-#   student_model.pkl  - Trained Random Forest classifier
+#   student_model.pkl  - Trained classifier (Random Forest / best model)
 #   scaler.pkl         - Feature scaler/standardizer
-#   label_encoder.pkl  - Label encoder (A, B, C, D, F)
+#   label_encoder.pkl  - Label encoder (High, Average, Low)

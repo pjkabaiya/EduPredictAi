@@ -37,7 +37,7 @@ def init_firebase():
 
 async def verify_token(authorization: Optional[str] = Header(None)):
     if not _initialized:
-        return {"uid": "anonymous", "email": "anonymous@edupredict.ai"}
+        return {"uid": "anonymous", "email": "anonymous@mathpredict.ai"}
 
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing or invalid authorization header")

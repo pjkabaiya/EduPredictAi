@@ -8,7 +8,7 @@ import {
   PieChart, Pie, Cell, AreaChart, Area,
 } from 'recharts';
 
-const COLORS = ['#10b981', '#34d399', '#6ee7b7', '#f59e0b', '#ef4444', '#8b5cf6'];
+const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#3b82f6', '#ec4899'];
 
 export function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -27,73 +27,77 @@ export function AnalyticsPage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-white">Analytics</h2>
-        <p className="text-navy-400 mt-1">Comprehensive analysis of student performance data.</p>
+        <h2 className="text-2xl font-bold text-white">Analytics Dashboard</h2>
+        <p className="text-navy-400 mt-1">Comprehensive analysis of mathematics performance data and key influencing factors.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Grade Distribution</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Performance Distribution</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data.grade_distribution}>
+            <BarChart data={data.performance_distribution}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
-              <XAxis dataKey="grade" stroke="#627d98" />
+              <XAxis dataKey="category" stroke="#627d98" />
               <YAxis stroke="#627d98" />
               <Tooltip contentStyle={{ background: '#1e3a5f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
               <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                {data.grade_distribution.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                {data.performance_distribution.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Attendance Distribution</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Study Time vs Performance</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data.attendance_distribution}>
+            <BarChart data={data.studytime_performance}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
               <XAxis dataKey="range" stroke="#627d98" />
               <YAxis stroke="#627d98" />
               <Tooltip contentStyle={{ background: '#1e3a5f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
-              <Bar dataKey="count" radius={[6, 6, 0, 0]} fill="#10b981" />
+              <Bar dataKey="avg_g3" radius={[6, 6, 0, 0]} fill="#10b981" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">KCPE Marks vs Performance</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Failures Distribution</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data.kcpe_vs_performance}>
+            <BarChart data={data.failures_distribution}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
-              <XAxis dataKey="marks" stroke="#627d98" name="KCPE Marks" />
-              <YAxis dataKey="grade" stroke="#627d98" name="KCSE Grade" />
+              <XAxis dataKey="failures" stroke="#627d98" />
+              <YAxis stroke="#627d98" />
               <Tooltip contentStyle={{ background: '#1e3a5f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
-              <Bar dataKey="grade" fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" radius={[4, 4, 0, 0]} fill="#10b981" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Performance Categories</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Parental Education vs Performance</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie data={data.performance_categories} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="count" label={({ category }) => category}>
-                {data.performance_categories.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
-              </Pie>
+            <BarChart data={data.parental_education}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
+              <XAxis dataKey="level" stroke="#627d98" />
+              <YAxis stroke="#627d98" />
               <Tooltip contentStyle={{ background: '#1e3a5f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
-            </PieChart>
+              <Bar dataKey="avg_g3" radius={[4, 4, 0, 0]} fill="#10b981" />
+            </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Gender Distribution</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Gender vs Performance</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie data={data.gender_distribution} cx="50%" cy="50%" outerRadius={100} paddingAngle={5} dataKey="count" label={({ gender }) => gender}>
-                {data.gender_distribution.map((_, i) => <Cell key={i} fill={[COLORS[0], COLORS[2]][i]} />)}
-              </Pie>
+            <BarChart data={data.gender_performance}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
+              <XAxis dataKey="gender" stroke="#627d98" />
+              <YAxis stroke="#627d98" />
               <Tooltip contentStyle={{ background: '#1e3a5f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
-            </PieChart>
+              <Bar dataKey="high" fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="average" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="low" fill="#ef4444" radius={[4, 4, 0, 0]} />
+            </BarChart>
           </ResponsiveContainer>
         </div>
 
@@ -111,6 +115,19 @@ export function AnalyticsPage() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">Internet Access Impact</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={data.internet_access}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
+            <XAxis dataKey="access" stroke="#627d98" />
+            <YAxis stroke="#627d98" />
+            <Tooltip contentStyle={{ background: '#1e3a5f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
+            <Bar dataKey="avg_g3" radius={[6, 6, 0, 0]} fill="#8b5cf6" />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

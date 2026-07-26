@@ -10,18 +10,38 @@ prediction_service = PredictionService()
 
 
 class PredictionRequest(BaseModel):
+    school: str
+    sex: str
     age: int
-    gender: str
-    kcpe_marks: float
-    kcse_grade: str
-    university_previous_grade: str
-    study_hours_per_week: float
-    attendance_percentage: float
-    assignment_completion_rate: float
-    internet_access: str
-    parent_education: str
-    sleep_hours: float
-    extracurricular_activities: str
+    address: str
+    famsize: str
+    pstatus: str
+    medu: int
+    fedu: int
+    mjob: str
+    fjob: str
+    reason: str
+    guardian: str
+    traveltime: int
+    studytime: int
+    failures: int
+    schoolsup: str
+    famsup: str
+    paid: str
+    activities: str
+    nursery: str
+    higher: str
+    internet: str
+    romantic: str
+    famrel: int
+    freetime: int
+    goout: int
+    dalc: int
+    walc: int
+    health: int
+    absences: int
+    g1: int
+    g2: int
 
 
 @router.post("/predict")

@@ -7,7 +7,7 @@ import { Brain, Database, BarChart3, GitBranch, Shield, Zap,Target, BookOpen, Us
 const icons: Record<string, React.ComponentType<{ className?: string }>> = {
   'React 19': Smartphone, TypeScript: Shield, TailwindCSS: Zap, 'Framer Motion': BarChart3,
   Recharts: BarChart3, Python: Brain, FastAPI: Zap, 'Scikit-learn': Target,
-  Pandas: BookOpen, NumPy: Database, Git: GitBranch, GitHub: GitBranch,
+  Pandas: BookOpen, NumPy: Database, Git: GitBranch, GitHub: GitBranch, 'GitHub Pages': Server,
   Vercel: Server, Render: Server, 'Jupyter Notebook': BookOpen,
 };
 
@@ -28,7 +28,7 @@ export function AboutPage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 max-w-4xl">
       <div>
-        <h2 className="text-2xl font-bold text-white">About EduPredict AI</h2>
+        <h2 className="text-2xl font-bold text-white">About MathPredict AI</h2>
         <p className="text-navy-400 mt-1">{data.description}</p>
       </div>
 

@@ -12,14 +12,14 @@ import {
   ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip,
 } from 'recharts';
 
-const COLORS = ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#059669'];
+const COLORS = ['#10b981', '#f59e0b', '#ef4444'];
 
 const recentPredictions = [
-  { id: '#PRED-001', student: 'Alice Kamau', prediction: 'Grade A', confidence: 94.2, risk: 'Low', date: '2026-07-22' },
-  { id: '#PRED-002', student: 'Bob Otieno', prediction: 'Grade B', confidence: 78.5, risk: 'Medium', date: '2026-07-22' },
-  { id: '#PRED-003', student: 'Carol Wanjiku', prediction: 'Grade D', confidence: 88.1, risk: 'High', date: '2026-07-21' },
-  { id: '#PRED-004', student: 'David Mwangi', prediction: 'Grade A', confidence: 91.7, risk: 'Low', date: '2026-07-21' },
-  { id: '#PRED-005', student: 'Emily Akinyi', prediction: 'Grade C', confidence: 82.3, risk: 'Medium', date: '2026-07-20' },
+  { id: '#PRED-001', student: 'Alice Kamau', prediction: 'High Performance', confidence: 94.2, risk: 'Low', date: '2026-07-22' },
+  { id: '#PRED-002', student: 'Bob Otieno', prediction: 'Average Performance', confidence: 78.5, risk: 'Medium', date: '2026-07-22' },
+  { id: '#PRED-003', student: 'Carol Wanjiku', prediction: 'Low Performance', confidence: 88.1, risk: 'High', date: '2026-07-21' },
+  { id: '#PRED-004', student: 'David Mwangi', prediction: 'High Performance', confidence: 91.7, risk: 'Low', date: '2026-07-21' },
+  { id: '#PRED-005', student: 'Emily Akinyi', prediction: 'Average Performance', confidence: 82.3, risk: 'Medium', date: '2026-07-20' },
 ];
 
 const weeklyTrend = [
@@ -33,17 +33,17 @@ const weeklyTrend = [
 ];
 
 const riskDistribution = [
-  { name: 'Low Risk', value: 55 },
-  { name: 'Medium Risk', value: 30 },
-  { name: 'High Risk', value: 15 },
+  { name: 'High Performance', value: 42 },
+  { name: 'Average Performance', value: 50 },
+  { name: 'Low Performance', value: 35 },
 ];
 
 const activityLog = [
-  { action: 'Grade prediction made', detail: 'Alice Kamau - Grade A', time: '2 min ago' },
-  { action: 'Model retrained', detail: 'Accuracy improved to 90.5%', time: '1 hour ago' },
-  { action: 'Dataset updated', detail: '25 new Kenyan student records added', time: '3 hours ago' },
+  { action: 'Performance prediction made', detail: 'Alice Kamau - High Performance', time: '2 min ago' },
+  { action: 'Model retrained', detail: 'Accuracy improved to 91.2%', time: '1 hour ago' },
+  { action: 'Dataset updated', detail: 'New student records added from UCI dataset', time: '3 hours ago' },
   { action: 'System health check', detail: 'All services operational', time: '5 hours ago' },
-  { action: 'KCSE grade mapping adjusted', detail: 'Grade boundary recalibrated', time: '1 day ago' },
+  { action: 'Feature engineering completed', detail: 'New math assessment attributes added', time: '1 day ago' },
 ];
 
 export function DashboardPage() {
@@ -64,7 +64,7 @@ export function DashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-white">Welcome back, {user?.name || 'User'}!</h2>
-            <p className="text-navy-400 mt-1">Here&apos;s your EduPredict AI Kenyan academic overview for today.</p>
+            <p className="text-navy-400 mt-1">Here&apos;s your MathPredict AI mathematics performance overview for today.</p>
           </div>
           <button onClick={() => navigate('/prediction')}
             className="hidden md:flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-all">
@@ -75,9 +75,9 @@ export function DashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total Predictions" value="1,247" change={12} icon="Brain" color="bg-emerald-500/10 text-emerald-400" delay={0.05} />
-        <StatCard title="Students Analyzed" value="500" change={8} icon="Users" color="bg-blue-500/10 text-blue-400" delay={0.1} />
-        <StatCard title="Model Accuracy" value="90.5%" change={1.8} icon="Target" color="bg-purple-500/10 text-purple-400" delay={0.15} />
-        <StatCard title="At-Risk Students" value="52" change={-3} icon="AlertTriangle" color="bg-amber-500/10 text-amber-400" delay={0.2} />
+        <StatCard title="High Performers" value="48" change={6} icon="Target" color="bg-emerald-500/10 text-emerald-400" delay={0.1} />
+        <StatCard title="Average Performers" value="312" change={4} icon="Users" color="bg-amber-500/10 text-amber-400" delay={0.15} />
+        <StatCard title="Low Performers" value="52" change={-3} icon="AlertTriangle" color="bg-red-500/10 text-red-400" delay={0.2} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -98,7 +98,7 @@ export function DashboardPage() {
         </div>
 
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Risk Distribution</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Performance Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie data={riskDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value">
@@ -133,9 +133,8 @@ export function DashboardPage() {
                 </div>
                 <div className="text-right">
                   <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                    p.prediction === 'Grade A' ? 'bg-emerald-500/10 text-emerald-400' :
-                    p.prediction === 'Grade B' ? 'bg-blue-500/10 text-blue-400' :
-                    p.prediction === 'Grade C' ? 'bg-amber-500/10 text-amber-400' :
+                    p.prediction === 'High Performance' ? 'bg-emerald-500/10 text-emerald-400' :
+                    p.prediction === 'Average Performance' ? 'bg-amber-500/10 text-amber-400' :
                     'bg-red-500/10 text-red-400'
                   }`}>{p.prediction}</span>
                   <p className="text-xs text-navy-500 mt-1">{p.confidence}% confidence</p>
@@ -151,8 +150,8 @@ export function DashboardPage() {
             <div className="space-y-3">
               {[
                 { label: 'API Server', status: 'Operational', icon: CheckCircle, color: 'text-emerald-400' },
-                { label: 'ML Model', status: 'Loaded (Fake)', icon: Activity, color: 'text-amber-400' },
-                { label: 'Database', status: 'Connected', icon: CheckCircle, color: 'text-emerald-400' },
+                { label: 'ML Model', status: 'Loaded (Random Forest)', icon: Activity, color: 'text-emerald-400' },
+                { label: 'Database', status: 'Connected (MongoDB)', icon: CheckCircle, color: 'text-emerald-400' },
                 { label: 'Prediction Service', status: 'Ready', icon: CheckCircle, color: 'text-emerald-400' },
               ].map((s) => (
                 <div key={s.label} className="flex items-center justify-between">

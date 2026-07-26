@@ -41,7 +41,7 @@ export function RegisterPage() {
             <GraduationCap className="w-7 h-7 text-emerald-400" />
           </div>
           <h1 className="text-2xl font-bold text-white">Create Account</h1>
-          <p className="text-navy-400 mt-2">Join EduPredict AI today</p>
+          <p className="text-navy-400 mt-2">Join MathPredict AI today</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-navy-800/50 backdrop-blur-sm border border-white/5 rounded-2xl p-8 space-y-5">

@@ -22,7 +22,7 @@ export function TeamPage() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-white">Our Team</h2>
-        <p className="text-navy-400 mt-1">The talented individuals behind EduPredict AI.</p>
+        <p className="text-navy-400 mt-1">The talented individuals behind MathPredict AI.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

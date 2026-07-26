@@ -41,7 +41,7 @@ export function ModelPerformancePage() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-white">Model Performance</h2>
-        <p className="text-navy-400 mt-1">Comprehensive evaluation metrics for the prediction model.</p>
+        <p className="text-navy-400 mt-1">Comprehensive evaluation metrics for the mathematics performance prediction model.</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -79,7 +79,7 @@ export function ModelPerformancePage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-navy-400 text-xs">
-                  <th className="p-2 text-left">Grade</th>
+                  <th className="p-2 text-left">Class</th>
                   <th className="p-2 text-right">Precision</th>
                   <th className="p-2 text-right">Recall</th>
                   <th className="p-2 text-right">F1-Score</th>
@@ -87,9 +87,9 @@ export function ModelPerformancePage() {
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(data.classification_report).map(([grade, metrics]) => (
-                  <tr key={grade} className="border-t border-white/5">
-                    <td className="p-2 font-medium text-white">{grade}</td>
+                {Object.entries(data.classification_report).map(([cls, metrics]) => (
+                  <tr key={cls} className="border-t border-white/5">
+                    <td className="p-2 font-medium text-white">{cls}</td>
                     <td className="p-2 text-right text-navy-300">{metrics.precision.toFixed(2)}</td>
                     <td className="p-2 text-right text-navy-300">{metrics.recall.toFixed(2)}</td>
                     <td className="p-2 text-right text-navy-300">{metrics['f1-score'].toFixed(2)}</td>
@@ -122,7 +122,9 @@ export function ModelPerformancePage() {
           <h3 className="text-lg font-semibold text-white mb-4">Model Configuration</h3>
           <div className="space-y-4">
             {[
+              { label: 'Best Model', value: data.model_info.best_model },
               { label: 'Algorithm', value: data.model_info.algorithm },
+              { label: 'Candidate Models', value: data.model_info.candidates.join(', ') },
               { label: 'Number of Estimators', value: data.model_info.n_estimators },
               { label: 'Max Depth', value: data.model_info.max_depth },
               { label: 'Training Samples', value: data.model_info.training_samples },

@@ -2,9 +2,7 @@ import random
 import os
 
 
-KCSE_GRADES = ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "E"]
-UNI_GRADES = ["A", "B", "C", "D", "F"]
-KCSE_ORDER = {g: i for i, g in enumerate(KCSE_GRADES)}
+PERFORMANCE_CLASSES = ["Low Performance", "Average Performance", "High Performance"]
 
 
 class PredictionService:
@@ -27,55 +25,58 @@ class PredictionService:
             except Exception:
                 pass
 
-    def _grade_to_score(self, grade):
-        scores = {"A": 12, "A-": 11, "B+": 10, "B": 9, "B-": 8, "C+": 7, "C": 6, "C-": 5, "D+": 4, "D": 3, "D-": 2, "E": 1}
-        return scores.get(grade, 6)
-
-    def _predict_fake(self, data: dict) -> dict:
-        kcse_score = self._grade_to_score(data.get("kcse_grade", "C"))
-        kcpe = data.get("kcpe_marks", 250)
-        study = data.get("study_hours_per_week", 15)
-        attendance = data.get("attendance_percentage", 80)
-        assignments = data.get("assignment_completion_rate", 75)
-        prev_grade = data.get("university_previous_grade", "C")
-        prev_score = {"A": 4, "B": 3, "C": 2, "D": 1, "F": 0}.get(prev_grade, 2)
-
-        raw = (
-            kcpe / 500 * 0.15 + kcse_score / 12 * 0.25 + study / 40 * 0.15
-            + attendance / 100 * 0.15 + assignments / 100 * 0.10 + prev_score / 4 * 0.20
+    def _compute_heuristic_score(self, data: dict) -> float:
+        study_score = data.get("studytime", 2) / 4 * 0.10
+        failures_score = (1 - data.get("failures", 0) / 4) * 0.15
+        absent_score = max(0, 1 - data.get("absences", 0) / 50) * 0.10
+        g1_score = data.get("g1", 10) / 20 * 0.20
+        g2_score = data.get("g2", 10) / 20 * 0.25
+        parent_ed = (data.get("medu", 2) + data.get("fedu", 2)) / 8 * 0.05
+        schoolsup_score = 0.05 if data.get("schoolsup", "no") == "yes" else 0
+        internet_score = 0.05 if data.get("internet", "no") == "yes" else 0
+        health_opt = 1 - abs(data.get("health", 3) - 3) / 2
+        health_score = health_opt * 0.05
+        return (
+            study_score + failures_score + absent_score + g1_score + g2_score
+            + parent_ed + schoolsup_score + internet_score + health_score
         )
 
-        if raw >= 0.78:
-            prediction = "A"
-        elif raw >= 0.62:
-            prediction = "B"
-        elif raw >= 0.45:
-            prediction = "C"
-        elif raw >= 0.30:
-            prediction = "D"
+    def _classify_performance(self, raw: float) -> str:
+        if raw >= 0.75:
+            return "High Performance"
+        elif raw >= 0.50:
+            return "Average Performance"
         else:
-            prediction = "F"
+            return "Low Performance"
 
-        grade_ranges = {"A": (85, 99), "B": (78, 92), "C": (75, 88), "D": (72, 86), "F": (80, 95)}
-        cmin, cmax = grade_ranges[prediction]
+    def _predict_fake(self, data: dict) -> dict:
+        raw = self._compute_heuristic_score(data)
+        prediction = self._classify_performance(raw)
+
+        confidence_ranges = {
+            "High Performance": (85, 98),
+            "Average Performance": (78, 92),
+            "Low Performance": (80, 95),
+        }
+        cmin, cmax = confidence_ranges[prediction]
         confidence = round(random.uniform(cmin, cmax), 1)
 
         probs = {}
         remaining = 100 - confidence
-        for g in UNI_GRADES:
-            probs[g] = 0
+        for cls in PERFORMANCE_CLASSES:
+            probs[cls] = 0
         probs[prediction] = confidence
-        others = [g for g in UNI_GRADES if g != prediction]
-        for i, g in enumerate(others):
+        others = [c for c in PERFORMANCE_CLASSES if c != prediction]
+        for i, cls in enumerate(others):
             share = round(remaining / len(others), 1)
-            probs[g] = share
-        probs[prediction] = 100 - sum(probs[g] for g in UNI_GRADES if g != prediction)
+            probs[cls] = share
+        probs[prediction] = 100 - sum(probs[c] for c in PERFORMANCE_CLASSES if c != prediction)
 
-        risk = "Low" if prediction in ("A", "B") else "Medium" if prediction in ("C", "D") else "High"
+        risk = {"High Performance": "Low", "Average Performance": "Medium", "Low Performance": "High"}[prediction]
         recommendations = self._generate_recommendations(prediction, data)
 
         return {
-            "prediction": f"Grade {prediction}",
+            "prediction": prediction,
             "confidence": confidence,
             "risk": risk,
             "probabilities": {k: round(v, 1) for k, v in probs.items()},
@@ -84,26 +85,50 @@ class PredictionService:
 
     def _generate_recommendations(self, prediction: str, data: dict) -> list:
         recs = []
-        if data.get("kcpe_marks", 300) < 300:
-            recs.append("Consider remedial foundation courses to strengthen core concepts before university-level work.")
-        kcse_idx = KCSE_ORDER.get(data.get("kcse_grade", "C"), 6)
-        if kcse_idx > 4:
-            recs.append("Focus on bridging the gap between KCSE and university-level academic expectations.")
-        if data.get("study_hours_per_week", 0) < 20:
-            recs.append("Increase study hours to at least 20 hours per week for better performance.")
-        if data.get("attendance_percentage", 100) < 80:
-            recs.append("Improve attendance to above 80% to stay aligned with coursework.")
-        if data.get("assignment_completion_rate", 100) < 70:
-            recs.append("Complete at least 70% of assignments to reinforce understanding.")
-        if prediction in ("D", "F"):
-            recs.append("Seek academic advising and consider joining study groups for peer support.")
-            recs.append("Schedule regular consultations with lecturers for additional help.")
-        elif prediction == "C":
-            recs.append("Target specific weaker subjects to push your grade higher.")
+
+        if data.get("failures", 0) > 0:
+            recs.append("Address past academic failures by identifying weak areas and seeking tutoring support.")
+
+        if data.get("studytime", 2) < 2:
+            recs.append("Increase weekly study time to at least 2-5 hours for better subject mastery.")
+
+        if data.get("absences", 0) > 10:
+            recs.append("Reduce school absences to stay aligned with coursework and avoid falling behind.")
+
+        if data.get("internet", "no") == "no":
+            recs.append("Utilize school computer labs and library resources to compensate for lack of internet access at home.")
+
+        if data.get("schoolsup", "no") == "no" and prediction in ("Low Performance", "Average Performance"):
+            recs.append("Consider enrolling in school academic support programs for extra guidance.")
+
+        if data.get("g1", 10) < 10:
+            recs.append("Focus on strengthening fundamental concepts from early assessments to build a better foundation.")
+
+        if data.get("g2", 10) < 10 and data.get("g1", 10) < 10:
+            recs.append("Establish a consistent study routine and seek teacher consultations to improve mid-term performance.")
+
+        if data.get("health", 3) < 3:
+            recs.append("Prioritize physical and mental well-being — good health positively impacts academic performance.")
+
+        if data.get("famsup", "no") == "no" and prediction == "Low Performance":
+            recs.append("Engage family support for a more structured and encouraging study environment.")
+
+        if data.get("goout", 3) > 4:
+            recs.append("Reduce time spent going out with friends to allocate more time for academic work.")
+
+        if data.get("dalc", 1) > 2 or data.get("walc", 1) > 2:
+            recs.append("Reduce alcohol consumption on weekdays and weekends to improve focus and attendance.")
+
+        if prediction == "High Performance":
+            recs.append("Maintain current study habits and take on advanced challenges to continue excelling.")
+        elif prediction == "Average Performance":
+            recs.append("Target specific weaker subjects or skills to push your performance into the high range.")
         else:
-            recs.append("Maintain current academic approach and take on advanced challenges.")
+            recs.append("Seek academic advising and create a structured improvement plan with measurable goals.")
+
         if not recs:
-            recs.append("Continue monitoring your academic progress and stay consistent.")
+            recs.append("Continue monitoring your academic progress and stay consistent with your current approach.")
+
         return recs
 
     def _predict_real(self, data: dict) -> dict:
@@ -113,20 +138,22 @@ class PredictionService:
             import pandas as pd
             input_df = pd.DataFrame([data])
             numerical_cols = [
-                "age", "kcpe_marks", "study_hours_per_week", "attendance_percentage",
-                "assignment_completion_rate", "sleep_hours",
+                "age", "traveltime", "studytime", "failures", "famrel",
+                "freetime", "goout", "dalc", "walc", "health", "absences",
+                "g1", "g2", "medu", "fedu",
             ]
-            input_df[numerical_cols] = self.scaler.transform(input_df[numerical_cols])
+            available = [c for c in numerical_cols if c in input_df.columns]
+            input_df[available] = self.scaler.transform(input_df[available])
             prediction_encoded = self.model.predict(input_df)[0]
             prediction_label = self.label_encoder.inverse_transform([prediction_encoded])[0]
             probabilities = self.model.predict_proba(input_df)[0]
             classes = self.label_encoder.classes_
             probs = {cls: round(float(prob) * 100, 1) for cls, prob in zip(classes, probabilities)}
             confidence = max(probs.values())
-            risk = "Low" if confidence > 85 else "Medium" if confidence > 70 else "High"
+            risk = {"High Performance": "Low", "Average Performance": "Medium", "Low Performance": "High"}[prediction_label]
             recommendations = self._generate_recommendations(prediction_label, data)
             return {
-                "prediction": f"Grade {prediction_label}",
+                "prediction": prediction_label,
                 "confidence": round(confidence, 1),
                 "risk": risk,
                 "probabilities": probs,

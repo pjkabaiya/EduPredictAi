@@ -7,6 +7,6 @@ router = APIRouter()
 async def health_check():
     return {
         "status": "healthy",
-        "service": "EduPredict AI",
+        "service": "MathPredict AI",
         "version": "1.0.0",
     }

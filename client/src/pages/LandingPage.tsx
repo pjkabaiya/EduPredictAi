@@ -23,25 +23,25 @@ const stagger = {
 };
 
 const features = [
-  { icon: Brain, title: 'AI-Powered Predictions', description: 'Advanced machine learning algorithms analyze student data to predict academic performance with high accuracy.' },
-  { icon: BarChart3, title: 'Comprehensive Analytics', description: 'Interactive dashboards and visualizations provide deep insights into student performance patterns.' },
-  { icon: Shield, title: 'Early Risk Detection', description: 'Identify at-risk students early and enable targeted interventions before performance declines.' },
-  { icon: Zap, title: 'Real-Time Processing', description: 'Get instant predictions and recommendations with our optimized inference pipeline.' },
-  { icon: Users, title: 'Student-Centric', description: 'Focused on individual student attributes to provide personalized performance insights.' },
-  { icon: TrendingUp, title: 'Actionable Insights', description: 'Receive clear recommendations to help students improve their academic outcomes.' },
+  { icon: Brain, title: 'AI-Powered Predictions', description: 'Advanced machine learning algorithms analyze student demographic, behavioural and educational data to predict mathematics performance with high accuracy.' },
+  { icon: BarChart3, title: 'Performance Analytics', description: 'Interactive dashboards and visualizations provide deep insights into mathematics performance patterns and key factors.' },
+  { icon: Shield, title: 'Early Risk Detection', description: 'Identify students at risk of low mathematics performance early and enable targeted interventions.' },
+  { icon: Zap, title: 'Study Time Analysis', description: 'Analyse the impact of study time, past failures, and attendance on mathematics outcomes.' },
+  { icon: Users, title: 'Multi-Factor Analysis', description: 'Evaluate 30+ features including family background, parental education, and school support.' },
+  { icon: TrendingUp, title: 'Actionable Insights', description: 'Receive clear recommendations to help students improve their mathematics performance.' },
 ];
 
 const steps = [
-  { number: '01', title: 'Input Student Data', description: 'Enter academic and behavioral data including study hours, attendance, and past performance.' },
-  { number: '02', title: 'AI Analysis', description: 'Our model processes the data through a trained Random Forest classifier.' },
-  { number: '03', title: 'Get Prediction', description: 'Receive instant performance prediction with confidence score and risk level.' },
-  { number: '04', title: 'Take Action', description: 'Use personalized recommendations to improve student outcomes.' },
+  { number: '01', title: 'Input Student Data', description: 'Enter demographic, family, behavioural and academic data' },
+  { number: '02', title: 'AI Analysis', description: 'Our model processes data through a trained Random Forest classifier' },
+  { number: '03', title: 'Get Prediction', description: 'Receive instant mathematics performance prediction with confidence score' },
+  { number: '04', title: 'Take Action', description: 'Use personalised recommendations to improve mathematics outcomes' },
 ];
 
 const benefits = [
-  { icon: Target, title: '94% Accuracy', description: 'Our model achieves high prediction accuracy through robust training.' },
-  { icon: Sparkles, title: '16 Feature Analysis', description: 'Comprehensive analysis across academic, behavioral, and demographic factors.' },
-  { icon: CheckCircle, title: 'Early Intervention', description: 'Identify struggling students up to a semester in advance.' },
+  { icon: Target, title: '93% Accuracy', description: 'Our model achieves high prediction accuracy through robust training' },
+  { icon: Sparkles, title: '33 Feature Analysis', description: 'Comprehensive analysis across demographic, behavioural and academic factors' },
+  { icon: CheckCircle, title: 'Early Intervention', description: 'Identify struggling students before performance declines significantly' },
 ];
 
 const team = [
@@ -70,9 +70,9 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-emerald-400" />
-            <span className="font-bold text-lg">EduPredict<span className="text-emerald-400">AI</span></span>
+            <span className="font-bold text-lg">MathPredict<span className="text-emerald-400">AI</span></span>
           </div>
-<div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-8">
             <button onClick={() => scrollTo('features')} className="text-sm text-navy-300 hover:text-white transition-colors">Features</button>
             <button onClick={() => scrollTo('how-it-works')} className="text-sm text-navy-300 hover:text-white transition-colors">How It Works</button>
             <button onClick={() => scrollTo('benefits')} className="text-sm text-navy-300 hover:text-white transition-colors">Benefits</button>
@@ -97,7 +97,7 @@ export function LandingPage() {
           </div>
         </div>
         {mobileMenu && (
-<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="md:hidden border-t border-white/5 bg-navy-900 px-6 py-4 space-y-3">
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="md:hidden border-t border-white/5 bg-navy-900 px-6 py-4 space-y-3">
             <button onClick={() => { scrollTo('features'); setMobileMenu(false); }} className="block text-sm text-navy-300 hover:text-white">Features</button>
             <button onClick={() => { scrollTo('how-it-works'); setMobileMenu(false); }} className="block text-sm text-navy-300 hover:text-white">How It Works</button>
             <button onClick={() => { scrollTo('benefits'); setMobileMenu(false); }} className="block text-sm text-navy-300 hover:text-white">Benefits</button>
@@ -117,10 +117,10 @@ export function LandingPage() {
         <div className="relative text-center max-w-4xl mx-auto px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium mb-8">
-              <Sparkles className="w-4 h-4" /> AI-Powered Academic Intelligence
+              <Sparkles className="w-4 h-4" /> AI-Powered Mathematics Analytics
             </div>
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              Predict Student
+              Predict Mathematics
               <br />
               Performance with{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-300">
@@ -128,8 +128,8 @@ export function LandingPage() {
               </span>
             </h1>
             <p className="text-lg md:text-xl text-navy-300 mb-10 max-w-2xl mx-auto">
-              Leverage machine learning to predict academic outcomes, identify at-risk students,
-              and provide personalized recommendations for improvement.
+              Leverage machine learning to predict student mathematics outcomes, identify at-risk students,
+              and provide personalised recommendations based on behavioural, demographic and educational factors.
             </p>
             <div className="flex items-center justify-center gap-4 flex-wrap">
               {isAuthenticated ? (
@@ -155,7 +155,7 @@ export function LandingPage() {
       <section id="features" className="py-24 px-6">
         <motion.div {...fadeUp} className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Powerful Features</h2>
-          <p className="text-navy-400 max-w-2xl mx-auto">Everything you need to understand and improve student academic performance.</p>
+          <p className="text-navy-400 max-w-2xl mx-auto">Everything you need to understand and improve student mathematics performance.</p>
         </motion.div>
         <motion.div {...stagger} className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f) => (
@@ -193,7 +193,7 @@ export function LandingPage() {
 
       <section id="benefits" className="py-24 px-6">
         <motion.div {...fadeUp} className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Why EduPredict AI?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Why MathPredict AI?</h2>
           <p className="text-navy-400 max-w-2xl mx-auto">Built for accuracy, designed for impact.</p>
         </motion.div>
         <motion.div {...stagger} className="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
@@ -211,7 +211,7 @@ export function LandingPage() {
       <section id="team" className="py-24 px-6 bg-navy-900/30">
         <motion.div {...fadeUp} className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Meet the Team</h2>
-          <p className="text-navy-400 max-w-2xl mx-auto">The minds behind EduPredict AI.</p>
+          <p className="text-navy-400 max-w-2xl mx-auto">The minds behind MathPredict AI — a mathematics performance prediction project.</p>
         </motion.div>
         <motion.div {...stagger} className="max-w-5xl mx-auto grid md:grid-cols-4 gap-6">
           {team.map((m) => (
@@ -233,9 +233,9 @@ export function LandingPage() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-emerald-400" />
-              <span className="font-bold text-white">EduPredict<span className="text-emerald-400">AI</span></span>
+              <span className="font-bold text-white">MathPredict<span className="text-emerald-400">AI</span></span>
             </div>
-<div className="flex items-center gap-6 text-sm text-navy-400">
+            <div className="flex items-center gap-6 text-sm text-navy-400">
               <button onClick={() => scrollTo('features')} className="hover:text-white transition-colors">Features</button>
               <button onClick={() => scrollTo('how-it-works')} className="hover:text-white transition-colors">How It Works</button>
               <button onClick={() => scrollTo('team')} className="hover:text-white transition-colors">Team</button>
@@ -248,7 +248,7 @@ export function LandingPage() {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-white/5 text-center text-sm text-navy-500">
-            &copy; {new Date().getFullYear()} EduPredict AI. All rights reserved.
+            &copy; {new Date().getFullYear()} MathPredict AI. All rights reserved.
           </div>
         </div>
       </footer>

@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
 MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("MONGO_DB_NAME", "edupredict_ai")
+DB_NAME = os.getenv("MONGO_DB_NAME", "mathpredict_ai")
 
 client: MongoClient | None = None
 
@@ -46,4 +46,4 @@ def _seed_data():
 
     students = [_generate_student(i) for i in range(500)]
     db.students.insert_many(students)
-    print(f"Seeded {len(students)} students into MongoDB.")
+    print(f"Seeded {len(students)} UCI-format students into MongoDB.")

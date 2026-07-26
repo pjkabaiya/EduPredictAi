@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: edupredict-ai-api
+    name: mathpredict-ai-api
     runtime: python
     plan: free
     region: ohio
@@ -10,6 +10,6 @@ services:
       - key: MONGO_URI
         sync: false
       - key: MONGO_DB_NAME
-        value: edupredict_ai
+        value: mathpredict_ai
       - key: FIREBASE_SERVICE_ACCOUNT_JSON
         sync: false

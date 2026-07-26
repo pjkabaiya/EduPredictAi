@@ -36,7 +36,7 @@ export function SplashScreen() {
           <GraduationCap className="w-7 h-7 text-emerald-400" />
         </motion.div>
         <h1 className="text-3xl font-bold text-white mb-2">
-          EduPredict <span className="text-emerald-400">AI</span>
+          MathPredict <span className="text-emerald-400">AI</span>
         </h1>
         <p className="text-navy-400">Loading intelligent insights...</p>
       </motion.div>

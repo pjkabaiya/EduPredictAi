@@ -1,16 +1,36 @@
 export interface PredictionRequest {
+  school: string;
+  sex: string;
   age: number;
-  gender: string;
-  kcpe_marks: number;
-  kcse_grade: string;
-  university_previous_grade: string;
-  study_hours_per_week: number;
-  attendance_percentage: number;
-  assignment_completion_rate: number;
-  internet_access: string;
-  parent_education: string;
-  sleep_hours: number;
-  extracurricular_activities: string;
+  address: string;
+  famsize: string;
+  pstatus: string;
+  medu: number;
+  fedu: number;
+  mjob: string;
+  fjob: string;
+  reason: string;
+  guardian: string;
+  traveltime: number;
+  studytime: number;
+  failures: number;
+  schoolsup: string;
+  famsup: string;
+  paid: string;
+  activities: string;
+  nursery: string;
+  higher: string;
+  internet: string;
+  romantic: string;
+  famrel: number;
+  freetime: number;
+  goout: number;
+  dalc: number;
+  walc: number;
+  health: number;
+  absences: number;
+  g1: number;
+  g2: number;
 }
 
 export interface PredictionResponse {
@@ -23,20 +43,40 @@ export interface PredictionResponse {
 
 export interface Student {
   id: string;
-  name: string;
+  school: string;
+  sex: string;
   age: number;
-  gender: string;
-  kcpe_marks: number;
-  kcse_grade: string;
-  university_previous_grade: string;
-  study_hours_per_week: number;
-  attendance_percentage: number;
-  assignment_completion_rate: number;
-  internet_access: string;
-  parent_education: string;
-  sleep_hours: number;
-  extracurricular_activities: string;
-  predicted_grade: string;
+  address: string;
+  famsize: string;
+  pstatus: string;
+  medu: number;
+  fedu: number;
+  mjob: string;
+  fjob: string;
+  reason: string;
+  guardian: string;
+  traveltime: number;
+  studytime: number;
+  failures: number;
+  schoolsup: string;
+  famsup: string;
+  paid: string;
+  activities: string;
+  nursery: string;
+  higher: string;
+  internet: string;
+  romantic: string;
+  famrel: number;
+  freetime: number;
+  goout: number;
+  dalc: number;
+  walc: number;
+  health: number;
+  absences: number;
+  g1: number;
+  g2: number;
+  g3: number;
+  performance: string;
 }
 
 export interface DatasetResponse {
@@ -58,11 +98,13 @@ export interface DatasetSummary {
 }
 
 export interface AnalyticsData {
-  attendance_distribution: { range: string; count: number }[];
-  grade_distribution: { grade: string; count: number }[];
-  gender_distribution: { gender: string; count: number }[];
-  kcpe_vs_performance: { marks: number; grade: string }[];
-  performance_categories: { category: string; count: number }[];
+  performance_distribution: { category: string; count: number }[];
+  gender_performance: { gender: string; high: number; average: number; low: number }[];
+  studytime_performance: { range: string; avg_g3: number }[];
+  failures_distribution: { failures: number; count: number }[];
+  absences_distribution: { range: string; count: number }[];
+  parental_education: { level: string; avg_g3: number }[];
+  internet_access: { access: string; avg_g3: number }[];
   correlation_matrix: Record<string, Record<string, number>>;
   feature_importance: { feature: string; importance: number }[];
   missing_values: { column: string; missing: number }[];
@@ -79,24 +121,12 @@ export interface ModelPerformance {
   recall: number;
   f1_score: number;
   roc_auc: number;
-  confusion_matrix: {
-    true_a: number;
-    true_b: number;
-    true_c: number;
-    true_d: number;
-    true_f: number;
-    false_a: number;
-    false_b: number;
-    false_c: number;
-    false_d: number;
-    false_f: number;
-  };
-  classification_report: Record<
-    string,
-    { precision: number; recall: number; 'f1-score': number; support: number }
-  >;
+  confusion_matrix: number[][];
+  classification_report: Record<string, { precision: number; recall: number; 'f1-score': number; support: number }>;
   model_info: {
     algorithm: string;
+    best_model: string;
+    candidates: string[];
     n_estimators: number;
     max_depth: number;
     training_samples: number;

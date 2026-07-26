@@ -17,7 +17,7 @@ export function SettingsPage() {
   const [resetDone, setResetDone] = useState(false);
 
   const handleReset = () => {
-    localStorage.removeItem('edupredict_user');
+    localStorage.removeItem('mathpredict_user');
     setResetDone(true);
     setTimeout(() => {
       logout();

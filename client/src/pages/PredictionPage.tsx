@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Brain, User, Clock, Target, BookOpen, Wifi, GraduationCap,
-  Moon, Zap, FileText, AlertTriangle, CheckCircle,
-  RefreshCw, Sparkles, Award,
+  Brain, User, Users, BookOpen, Heart, Award,
+  AlertTriangle, CheckCircle,
+  RefreshCw, Sparkles,
 } from 'lucide-react';
 import { usePrediction } from '../contexts/PredictionContext';
 import type { PredictionRequest } from '../types';
@@ -11,42 +11,68 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
 
-const COLORS_RISK = ['#10b981', '#34d399', '#6ee7b7', '#f59e0b', '#ef4444'];
-
-const KCSE_GRADES = ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "E"];
-const UNI_GRADES = ["A", "B", "C", "D", "F"];
-const PARENT_ED = ["Primary", "Secondary", "Diploma", "Bachelor's", "Master's", "PhD"];
+const COLORS_PROB = ['#10b981', '#f59e0b', '#ef4444'];
+const SECTION_ICONS = { demographics: User, family: Users, academic: BookOpen, health: Heart, grades: Award } as const;
 
 const inputFields: {
-  label: string; key: keyof PredictionRequest; icon: React.ComponentType<{ className?: string }>;
-  type: string; min?: number; max?: number; step?: number; options?: string[]; section?: string;
+  label: string; key: keyof PredictionRequest; type: string;
+  min?: number; max?: number; step?: number; options?: { label: string; value: string }[];
+  section: keyof typeof SECTION_ICONS;
 }[] = [
-  { label: 'Age', key: 'age', icon: User, type: 'number', min: 18, max: 45, section: 'background' },
-  { label: 'Gender', key: 'gender', icon: User, type: 'select', options: ['Male', 'Female'], section: 'background' },
-  { label: 'KCPE Marks (0-500)', key: 'kcpe_marks', icon: FileText, type: 'number', min: 0, max: 500, section: 'background' },
-  { label: 'KCSE Grade', key: 'kcse_grade', icon: Award, type: 'select', options: KCSE_GRADES, section: 'background' },
-  { label: 'Prev Univ Grade', key: 'university_previous_grade', icon: GraduationCap, type: 'select', options: [...UNI_GRADES, 'N/A'], section: 'background' },
-  { label: 'Study Hours/Week', key: 'study_hours_per_week', icon: Clock, type: 'number', min: 0, max: 60, section: 'habits' },
-  { label: 'Attendance %', key: 'attendance_percentage', icon: Target, type: 'number', min: 0, max: 100, section: 'habits' },
-  { label: 'Assignment Completion %', key: 'assignment_completion_rate', icon: BookOpen, type: 'number', min: 0, max: 100, section: 'habits' },
-  { label: 'Internet Access', key: 'internet_access', icon: Wifi, type: 'select', options: ['Yes', 'No'], section: 'other' },
-  { label: 'Parent Education', key: 'parent_education', icon: GraduationCap, type: 'select', options: PARENT_ED, section: 'other' },
-  { label: 'Sleep Hours', key: 'sleep_hours', icon: Moon, type: 'number', min: 0, max: 12, section: 'other' },
-  { label: 'Extracurricular', key: 'extracurricular_activities', icon: Zap, type: 'select', options: ['Yes', 'No'], section: 'other' },
+  { label: 'School', key: 'school', type: 'select', options: [{ label: 'Gabriel Pereira (GP)', value: 'GP' }, { label: 'Mousinho da Silveira (MS)', value: 'MS' }], section: 'demographics' },
+  { label: 'Sex', key: 'sex', type: 'select', options: [{ label: 'Male', value: 'M' }, { label: 'Female', value: 'F' }], section: 'demographics' },
+  { label: 'Age', key: 'age', type: 'number', min: 15, max: 22, section: 'demographics' },
+  { label: 'Address Type', key: 'address', type: 'select', options: [{ label: 'Urban', value: 'U' }, { label: 'Rural', value: 'R' }], section: 'demographics' },
+  { label: 'Family Size', key: 'famsize', type: 'select', options: [{ label: '\u22643', value: 'LE3' }, { label: '>3', value: 'GT3' }], section: 'demographics' },
+  { label: 'Parent Status', key: 'pstatus', type: 'select', options: [{ label: 'Together', value: 'T' }, { label: 'Apart', value: 'A' }], section: 'demographics' },
+
+  { label: "Mother's Education", key: 'medu', type: 'select', options: [{ label: 'None', value: '0' }, { label: 'Primary', value: '1' }, { label: 'Secondary', value: '2' }, { label: 'Higher', value: '3' }, { label: 'Higher', value: '4' }], section: 'family' },
+  { label: "Father's Education", key: 'fedu', type: 'select', options: [{ label: 'None', value: '0' }, { label: 'Primary', value: '1' }, { label: 'Secondary', value: '2' }, { label: 'Higher', value: '3' }, { label: 'Higher', value: '4' }], section: 'family' },
+  { label: "Mother's Job", key: 'mjob', type: 'select', options: [{ label: 'Teacher', value: 'teacher' }, { label: 'Health', value: 'health' }, { label: 'Services', value: 'services' }, { label: 'At Home', value: 'at_home' }, { label: 'Other', value: 'other' }], section: 'family' },
+  { label: "Father's Job", key: 'fjob', type: 'select', options: [{ label: 'Teacher', value: 'teacher' }, { label: 'Health', value: 'health' }, { label: 'Services', value: 'services' }, { label: 'At Home', value: 'at_home' }, { label: 'Other', value: 'other' }], section: 'family' },
+  { label: 'Reason for School Choice', key: 'reason', type: 'select', options: [{ label: 'Home', value: 'home' }, { label: 'Reputation', value: 'reputation' }, { label: 'Course', value: 'course' }, { label: 'Other', value: 'other' }], section: 'family' },
+  { label: 'Guardian', key: 'guardian', type: 'select', options: [{ label: 'Mother', value: 'mother' }, { label: 'Father', value: 'father' }, { label: 'Other', value: 'other' }], section: 'family' },
+
+  { label: 'Travel Time to School', key: 'traveltime', type: 'select', options: [{ label: '<15 min', value: '1' }, { label: '15-30 min', value: '2' }, { label: '30-60 min', value: '3' }, { label: '>60 min', value: '4' }], section: 'academic' },
+  { label: 'Weekly Study Time', key: 'studytime', type: 'select', options: [{ label: '<2 hrs', value: '1' }, { label: '2-5 hrs', value: '2' }, { label: '5-10 hrs', value: '3' }, { label: '>10 hrs', value: '4' }], section: 'academic' },
+  { label: 'Past Class Failures', key: 'failures', type: 'select', options: [{ label: '0', value: '0' }, { label: '1', value: '1' }, { label: '2', value: '2' }, { label: '3', value: '3' }, { label: '4', value: '4' }], section: 'academic' },
+  { label: 'School Educational Support', key: 'schoolsup', type: 'select', options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }], section: 'academic' },
+  { label: 'Family Educational Support', key: 'famsup', type: 'select', options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }], section: 'academic' },
+  { label: 'Extra Paid Classes', key: 'paid', type: 'select', options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }], section: 'academic' },
+  { label: 'Extra-curricular Activities', key: 'activities', type: 'select', options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }], section: 'academic' },
+  { label: 'Attended Nursery School', key: 'nursery', type: 'select', options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }], section: 'academic' },
+  { label: 'Higher Education Aspiration', key: 'higher', type: 'select', options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }], section: 'academic' },
+  { label: 'Internet Access at Home', key: 'internet', type: 'select', options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }], section: 'academic' },
+  { label: 'In a Romantic Relationship', key: 'romantic', type: 'select', options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }], section: 'academic' },
+
+  { label: 'Family Relationship Quality', key: 'famrel', type: 'select', options: [{ label: '1 - Very Poor', value: '1' }, { label: '2 - Poor', value: '2' }, { label: '3 - Fair', value: '3' }, { label: '4 - Good', value: '4' }, { label: '5 - Excellent', value: '5' }], section: 'health' },
+  { label: 'Free Time After School', key: 'freetime', type: 'select', options: [{ label: '1 - Very Low', value: '1' }, { label: '2 - Low', value: '2' }, { label: '3 - Moderate', value: '3' }, { label: '4 - High', value: '4' }, { label: '5 - Very High', value: '5' }], section: 'health' },
+  { label: 'Going Out with Friends', key: 'goout', type: 'select', options: [{ label: '1 - Very Rarely', value: '1' }, { label: '2 - Rarely', value: '2' }, { label: '3 - Sometimes', value: '3' }, { label: '4 - Often', value: '4' }, { label: '5 - Very Often', value: '5' }], section: 'health' },
+  { label: 'Workday Alcohol Consumption', key: 'dalc', type: 'select', options: [{ label: '1 - Very Low', value: '1' }, { label: '2 - Low', value: '2' }, { label: '3 - Moderate', value: '3' }, { label: '4 - High', value: '4' }, { label: '5 - Very High', value: '5' }], section: 'health' },
+  { label: 'Weekend Alcohol Consumption', key: 'walc', type: 'select', options: [{ label: '1 - Very Low', value: '1' }, { label: '2 - Low', value: '2' }, { label: '3 - Moderate', value: '3' }, { label: '4 - High', value: '4' }, { label: '5 - Very High', value: '5' }], section: 'health' },
+  { label: 'Current Health Status', key: 'health', type: 'select', options: [{ label: '1 - Very Poor', value: '1' }, { label: '2 - Poor', value: '2' }, { label: '3 - Fair', value: '3' }, { label: '4 - Good', value: '4' }, { label: '5 - Excellent', value: '5' }], section: 'health' },
+  { label: 'School Absences', key: 'absences', type: 'number', min: 0, max: 50, section: 'health' },
+
+  { label: 'First Period Grade (G1)', key: 'g1', type: 'number', min: 0, max: 20, section: 'grades' },
+  { label: 'Second Period Grade (G2)', key: 'g2', type: 'number', min: 0, max: 20, section: 'grades' },
 ];
 
-const sections = [
-  { id: 'background', label: 'Student Background' },
-  { id: 'habits', label: 'Study Habits' },
-  { id: 'other', label: 'Other Factors' },
+const sections: { id: keyof typeof SECTION_ICONS; label: string }[] = [
+  { id: 'demographics', label: 'Student Demographics' },
+  { id: 'family', label: 'Family Background' },
+  { id: 'academic', label: 'Academic Factors' },
+  { id: 'health', label: 'Personal & Health' },
+  { id: 'grades', label: 'Prior Grades' },
 ];
 
 const defaultForm: PredictionRequest = {
-  age: 20, gender: 'Male', kcpe_marks: 350, kcse_grade: 'B+',
-  university_previous_grade: 'N/A', study_hours_per_week: 20,
-  attendance_percentage: 85, assignment_completion_rate: 80,
-  internet_access: 'Yes', parent_education: "Bachelor's",
-  sleep_hours: 7, extracurricular_activities: 'Yes',
+  school: 'GP', sex: 'F', age: 17, address: 'U', famsize: 'LE3',
+  pstatus: 'T', medu: 2, fedu: 2, mjob: 'other', fjob: 'other',
+  reason: 'course', guardian: 'mother', traveltime: 2, studytime: 2,
+  failures: 0, schoolsup: 'no', famsup: 'no', paid: 'no',
+  activities: 'no', nursery: 'yes', higher: 'yes', internet: 'yes',
+  romantic: 'no', famrel: 4, freetime: 3, goout: 3, dalc: 1,
+  walc: 1, health: 4, absences: 4, g1: 10, g2: 10,
 };
 
 export function PredictionPage() {
@@ -71,11 +97,9 @@ export function PredictionPage() {
     }
   };
 
-  const getGradeColor = (g: string) => {
-    if (g.includes('A')) return 'text-emerald-400';
-    if (g.includes('B')) return 'text-blue-400';
-    if (g.includes('C')) return 'text-amber-400';
-    if (g.includes('D')) return 'text-orange-400';
+  const getPerformanceColor = (p: string) => {
+    if (p === 'High') return 'text-emerald-400';
+    if (p === 'Average') return 'text-amber-400';
     return 'text-red-400';
   };
 
@@ -86,8 +110,8 @@ export function PredictionPage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-white">Grade Prediction</h2>
-        <p className="text-navy-400 mt-1">Enter student details to predict university grade (A-F) based on KCPE, KCSE, and academic habits.</p>
+        <h2 className="text-2xl font-bold text-white">Performance Prediction</h2>
+        <p className="text-navy-400 mt-1">Enter student details to predict academic performance (High / Average / Low) based on UCI Student Performance dataset features.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -102,31 +126,44 @@ export function PredictionPage() {
             <h3 className="text-lg font-semibold text-white">Student Information</h3>
           </div>
 
-          {sections.map((sec) => (
-            <div key={sec.id}>
-              <h4 className="text-xs font-semibold text-navy-400 uppercase tracking-wider mb-3">{sec.label}</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {inputFields.filter((f) => f.section === sec.id).map((field) => (
-                  <div key={field.key}>
-                    <label className="block text-sm font-medium text-navy-300 mb-1.5 flex items-center gap-1.5">
-                      <field.icon className="w-3.5 h-3.5 text-navy-400" />
-                      {field.label}
-                    </label>
-                    {field.type === 'select' ? (
-                      <select value={form[field.key] as string} onChange={(e) => updateField(field.key, e.target.value)}
-                        className="w-full px-3 py-2 bg-navy-900/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all">
-                        {field.options?.map((o) => <option key={o} value={o}>{o}</option>)}
-                      </select>
-                    ) : (
-                      <input type={field.type} min={field.min} max={field.max} step={field.step ?? 1}
-                        value={form[field.key]} onChange={(e) => updateField(field.key, field.type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value)}
-                        className="w-full px-3 py-2 bg-navy-900/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all" />
-                    )}
-                  </div>
-                ))}
+          {sections.map((sec) => {
+            const Icon = SECTION_ICONS[sec.id];
+            return (
+              <div key={sec.id}>
+                <h4 className="flex items-center gap-1.5 text-xs font-semibold text-navy-400 uppercase tracking-wider mb-3">
+                  <Icon className="w-3.5 h-3.5" />
+                  {sec.label}
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {inputFields.filter((f) => f.section === sec.id).map((field) => (
+                    <div key={field.key}>
+                      <label className="block text-sm font-medium text-navy-300 mb-1.5">
+                        {field.label}
+                      </label>
+                      {field.type === 'select' ? (
+                        <select
+                          value={form[field.key] as string}
+                          onChange={(e) => updateField(field.key, e.target.value)}
+                          className="w-full px-3 py-2 bg-navy-900/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+                        >
+                          {field.options?.map((o) => (
+                            <option key={o.value} value={o.value}>{o.label}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type={field.type} min={field.min} max={field.max} step={field.step ?? 1}
+                          value={form[field.key]}
+                          onChange={(e) => updateField(field.key, field.type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value)}
+                          className="w-full px-3 py-2 bg-navy-900/50 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={isPredicting}
@@ -134,7 +171,7 @@ export function PredictionPage() {
               {isPredicting ? (
                 <><RefreshCw className="w-4 h-4 animate-spin" /> Predicting...</>
               ) : (
-                <><Brain className="w-4 h-4" /> Predict Grade</>
+                <><Brain className="w-4 h-4" /> Predict Performance</>
               )}
             </button>
             <button type="button" onClick={clear}
@@ -153,7 +190,7 @@ export function PredictionPage() {
                   className="w-16 h-16 rounded-full border-2 border-emerald-500/20 border-t-emerald-400 flex items-center justify-center mb-4">
                   <Brain className="w-6 h-6 text-emerald-400" />
                 </motion.div>
-                <p className="text-navy-400">Analyzing Kenyan academic data...</p>
+                <p className="text-navy-400">Analyzing student data...</p>
               </motion.div>
             )}
 
@@ -171,12 +208,12 @@ export function PredictionPage() {
               <motion.div key="result" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
                 <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-white">Predicted University Grade</h3>
+                    <h3 className="text-lg font-semibold text-white">Predicted Performance</h3>
                     <Sparkles className="w-5 h-5 text-emerald-400" />
                   </div>
                   <div className="text-center py-4">
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200 }}>
-                      <h2 className={`text-5xl font-bold ${getGradeColor(result.prediction)}`}>
+                      <h2 className={`text-5xl font-bold ${getPerformanceColor(result.prediction)}`}>
                         {result.prediction}
                       </h2>
                     </motion.div>
@@ -198,7 +235,7 @@ export function PredictionPage() {
                 </div>
 
                 <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Grade Probability Distribution</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">Probability Distribution</h3>
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={probData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
@@ -206,7 +243,7 @@ export function PredictionPage() {
                       <YAxis stroke="#627d98" tick={{ fontSize: 12 }} unit="%" domain={[0, 100]} />
                       <Tooltip contentStyle={{ background: '#1e3a5f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
                       <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                        {probData.map((_, i) => <Cell key={i} fill={COLORS_RISK[i % COLORS_RISK.length]} />)}
+                        {probData.map((_, i) => <Cell key={i} fill={COLORS_PROB[i % COLORS_PROB.length]} />)}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
@@ -233,7 +270,7 @@ export function PredictionPage() {
                 <Award className="w-16 h-16 text-navy-600 mb-4" />
                 <h3 className="text-lg font-semibold text-white mb-2">Ready to Predict</h3>
                 <p className="text-navy-400 text-center max-w-sm">
-                  Fill in the student&apos;s KCPE marks, KCSE grade, and study details to predict their likely university grade.
+                  Fill in the student details across demographics, family background, academic factors, personal health, and prior grades to get a performance prediction.
                 </p>
               </motion.div>
             )}

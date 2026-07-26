@@ -49,7 +49,7 @@ export function Sidebar() {
               exit={{ opacity: 0 }}
               className="font-bold text-lg text-white whitespace-nowrap"
             >
-              EduPredict
+              MathPredict
               <span className="text-emerald-400">AI</span>
             </motion.span>
           )}
