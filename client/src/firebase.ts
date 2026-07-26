@@ -1,5 +1,5 @@
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCzLDGFZWnoMHHdZs4dOF3J6YoKerAfkS4",
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "edupredictai-d30e0.firebaseapp.com",
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "edupredictai-d30e0",
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "edupredictai-d30e0.firebasestorage.app",
