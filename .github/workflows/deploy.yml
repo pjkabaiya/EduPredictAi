@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - 'client/**'
+      - 'server/**'
       - '.github/workflows/deploy.yml'
 
 jobs:
