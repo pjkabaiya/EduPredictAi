@@ -1,3 +1,15 @@
+import { initializeApp } from 'firebase/app';
+import {
+  getAuth,
+  connectAuthEmulator,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  updateProfile,
+  type User,
+} from 'firebase/auth';
+
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCzLDGFZWnoMHHdZs4dOF3J6YoKerAfkS4",
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "edupredictai-d30e0.firebaseapp.com",
@@ -8,97 +20,24 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-3H306JVEM2",
 };
 
-type FirebaseAuth = {
-  onAuthStateChanged: (cb: (user: FirebaseUser | null) => void) => () => void;
-  signInWithEmailAndPassword: (email: string, password: string) => Promise<FirebaseUser>;
-  createUserWithEmailAndPassword: (email: string, password: string) => Promise<FirebaseUser>;
-  signOut: () => Promise<void>;
-  currentUser: FirebaseUser | null;
-};
+let app: ReturnType<typeof initializeApp> | null = null;
+let auth: ReturnType<typeof getAuth> | null = null;
 
-type FirebaseUser = {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  getIdToken: () => Promise<string>;
-  updateProfile: (profile: { displayName?: string }) => Promise<void>;
-};
-
-let firebaseAuth: FirebaseAuth | null = null;
-let fbLoaded = false;
-let fbLoading = false;
-let fbLoadCallbacks: (() => void)[] = [];
-
-function onFirebaseReady(cb: () => void) {
-  if (fbLoaded) { cb(); return; }
-  fbLoadCallbacks.push(cb);
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+} catch (e) {
+  console.warn('Firebase init failed:', e);
 }
 
-async function loadFirebaseSDK() {
-  if (fbLoading || fbLoaded) return;
-  fbLoading = true;
+export { auth };
 
-  try {
-    const fb = (window as any).firebase;
-    if (fb && !fb.apps?.length) {
-      fb.initializeApp(firebaseConfig);
-    }
-    if (fb) {
-      const auth = fb.auth();
-      firebaseAuth = {
-        onAuthStateChanged: (cb: (user: FirebaseUser | null) => void) => {
-          return auth.onAuthStateChanged((u: any) => {
-            cb(u ? {
-              uid: u.uid,
-              email: u.email,
-              displayName: u.displayName,
-              getIdToken: () => u.getIdToken(),
-              updateProfile: (p: any) => u.updateProfile(p),
-            } : null);
-          });
-        },
-        signInWithEmailAndPassword: async (email: string, password: string) => {
-          const result = await auth.signInWithEmailAndPassword(email, password);
-          const u = result.user!;
-          return {
-            uid: u.uid,
-            email: u.email,
-            displayName: u.displayName,
-            getIdToken: () => u.getIdToken(),
-            updateProfile: (p: any) => u.updateProfile(p),
-          };
-        },
-        createUserWithEmailAndPassword: async (email: string, password: string) => {
-          const result = await auth.createUserWithEmailAndPassword(email, password);
-          const u = result.user!;
-          return {
-            uid: u.uid,
-            email: u.email,
-            displayName: u.displayName,
-            getIdToken: () => u.getIdToken(),
-            updateProfile: (p: any) => u.updateProfile(p),
-          };
-        },
-        signOut: () => auth.signOut(),
-        get currentUser() { return auth.currentUser ? ({
-          uid: auth.currentUser.uid,
-          email: auth.currentUser.email,
-          displayName: auth.currentUser.displayName,
-          getIdToken: () => auth.currentUser!.getIdToken(),
-          updateProfile: (p: any) => auth.currentUser!.updateProfile(p),
-        }) : null; },
-      };
-    }
-  } catch (e) { console.warn('Firebase init failed:', e); }
+export { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile };
 
-  auth = firebaseAuth;
-  fbLoaded = true;
-  fbLoading = false;
-  fbLoadCallbacks.forEach((cb) => cb());
-  fbLoadCallbacks = [];
+export function onFirebaseReady(cb: () => void) {
+  if (auth) {
+    cb();
+  }
 }
 
-loadFirebaseSDK();
-
-let auth: FirebaseAuth | null = null;
-export { firebaseAuth, auth, onFirebaseReady };
+export type { User };
