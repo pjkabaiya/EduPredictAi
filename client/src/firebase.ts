@@ -89,8 +89,9 @@ async function loadFirebaseSDK() {
         }) : null; },
       };
     }
-  } catch { /* ignore */ }
+  } catch (e) { console.warn('Firebase init failed:', e); }
 
+  auth = firebaseAuth;
   fbLoaded = true;
   fbLoading = false;
   fbLoadCallbacks.forEach((cb) => cb());
@@ -99,5 +100,5 @@ async function loadFirebaseSDK() {
 
 loadFirebaseSDK();
 
-const auth: FirebaseAuth | null = firebaseAuth;
+let auth: FirebaseAuth | null = null;
 export { firebaseAuth, auth, onFirebaseReady };

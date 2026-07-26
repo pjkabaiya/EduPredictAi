@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { auth } from '../firebase';
+import { auth, onFirebaseReady } from '../firebase';
 
 interface AppUser {
   id: string;
@@ -24,24 +24,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const a = auth;
-    if (!a) {
-      setIsLoading(false);
-      return;
-    }
-    const unsub = a.onAuthStateChanged((firebaseUser: any) => {
-      if (firebaseUser) {
-        setUser({
-          id: firebaseUser.uid,
-          name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
-          email: firebaseUser.email || '',
-        });
-      } else {
-        setUser(null);
+    let unsub: (() => void) | null = null;
+
+    const setupAuth = () => {
+      const a = auth;
+      if (!a) {
+        setIsLoading(false);
+        return;
       }
-      setIsLoading(false);
-    });
-    return unsub;
+      unsub = a.onAuthStateChanged((firebaseUser: any) => {
+        if (firebaseUser) {
+          setUser({
+            id: firebaseUser.uid,
+            name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+            email: firebaseUser.email || '',
+          });
+        } else {
+          setUser(null);
+        }
+        setIsLoading(false);
+      });
+    };
+
+    setupAuth();
+    if (!auth) {
+      onFirebaseReady(setupAuth);
+    }
+
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -53,10 +65,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (name: string, email: string, password: string) => {
     const a = auth;
     if (!a) throw new Error('Auth not available');
-    const u = await a.createUserWithEmailAndPassword(email, password);
-    const userAny = u as any;
-    if (userAny.updateProfile) {
-      await userAny.updateProfile({ displayName: name });
+    try {
+      const u = await a.createUserWithEmailAndPassword(email, password);
+      const userAny = u as any;
+      if (userAny.updateProfile) {
+        await userAny.updateProfile({ displayName: name });
+      }
+    } catch (e: any) {
+      console.error('Registration error:', e?.code || e?.message || e);
+      throw e;
     }
   };
 
