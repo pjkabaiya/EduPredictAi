@@ -8,55 +8,54 @@ import { useNavigate } from 'react-router-dom';
 import { StatCard } from '../components/StatCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useAuth } from '../contexts/AuthContext';
+import { api } from '../services/api';
 import {
   ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip,
 } from 'recharts';
 
 const COLORS = ['#10b981', '#f59e0b', '#ef4444'];
 
-const recentPredictions = [
-  { id: '#PRED-001', student: 'Alice Kamau', prediction: 'High Performance', confidence: 94.2, risk: 'Low', date: '2026-07-22' },
-  { id: '#PRED-002', student: 'Bob Otieno', prediction: 'Average Performance', confidence: 78.5, risk: 'Medium', date: '2026-07-22' },
-  { id: '#PRED-003', student: 'Carol Wanjiku', prediction: 'Low Performance', confidence: 88.1, risk: 'High', date: '2026-07-21' },
-  { id: '#PRED-004', student: 'David Mwangi', prediction: 'High Performance', confidence: 91.7, risk: 'Low', date: '2026-07-21' },
-  { id: '#PRED-005', student: 'Emily Akinyi', prediction: 'Average Performance', confidence: 82.3, risk: 'Medium', date: '2026-07-20' },
-];
-
-const weeklyTrend = [
-  { day: 'Mon', predictions: 12, accuracy: 92 },
-  { day: 'Tue', predictions: 18, accuracy: 94 },
-  { day: 'Wed', predictions: 15, accuracy: 91 },
-  { day: 'Thu', predictions: 22, accuracy: 95 },
-  { day: 'Fri', predictions: 20, accuracy: 93 },
-  { day: 'Sat', predictions: 8, accuracy: 96 },
-  { day: 'Sun', predictions: 5, accuracy: 94 },
-];
-
-const riskDistribution = [
-  { name: 'High Performance', value: 42 },
-  { name: 'Average Performance', value: 50 },
-  { name: 'Low Performance', value: 35 },
-];
-
-const activityLog = [
-  { action: 'Performance prediction made', detail: 'Alice Kamau - High Performance', time: '2 min ago' },
-  { action: 'Model retrained', detail: 'Accuracy improved to 91.2%', time: '1 hour ago' },
-  { action: 'Dataset updated', detail: 'New student records added from UCI dataset', time: '3 hours ago' },
-  { action: 'System health check', detail: 'All services operational', time: '5 hours ago' },
-  { action: 'Feature engineering completed', detail: 'New math assessment attributes added', time: '1 day ago' },
-];
+interface DashboardData {
+  stats: {
+    total_predictions: number;
+    high_performers: number;
+    average_performers: number;
+    low_performers: number;
+    high_change: number;
+    avg_change: number;
+    low_change: number;
+  };
+  performance_distribution: { name: string; value: number }[];
+  recent_predictions: {
+    id: string; student: string; prediction: string;
+    confidence: number; risk: string; date: string;
+  }[];
+  weekly_trend: { day: string; predictions: number; accuracy: number }[];
+  system_status: { label: string; status: string; color: string }[];
+  activity_log: { action: string; detail: string; time: string }[];
+}
 
 export function DashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<DashboardData | null>(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(t);
+    api.get<DashboardData>('/dashboard')
+      .then(setData)
+      .catch(() => setData(null))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <LoadingSpinner />;
+
+  const stats = data?.stats;
+  const performanceDist = data?.performance_distribution ?? [];
+  const predictions = data?.recent_predictions ?? [];
+  const weeklyTrend = data?.weekly_trend ?? [];
+  const systemStatus = data?.system_status ?? [];
+  const activityLog = data?.activity_log ?? [];
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -74,10 +73,10 @@ export function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Predictions" value="1,247" change={12} icon="Brain" color="bg-emerald-500/10 text-emerald-400" delay={0.05} />
-        <StatCard title="High Performers" value="48" change={6} icon="Target" color="bg-emerald-500/10 text-emerald-400" delay={0.1} />
-        <StatCard title="Average Performers" value="312" change={4} icon="Users" color="bg-amber-500/10 text-amber-400" delay={0.15} />
-        <StatCard title="Low Performers" value="52" change={-3} icon="AlertTriangle" color="bg-red-500/10 text-red-400" delay={0.2} />
+        <StatCard title="Total Predictions" value={stats?.total_predictions?.toLocaleString() ?? '-'} change={0} icon="Brain" color="bg-emerald-500/10 text-emerald-400" delay={0.05} />
+        <StatCard title="High Performers" value={stats?.high_performers?.toLocaleString() ?? '-'} change={stats?.high_change ?? 0} icon="Target" color="bg-emerald-500/10 text-emerald-400" delay={0.1} />
+        <StatCard title="Average Performers" value={stats?.average_performers?.toLocaleString() ?? '-'} change={stats?.avg_change ?? 0} icon="Users" color="bg-amber-500/10 text-amber-400" delay={0.15} />
+        <StatCard title="Low Performers" value={stats?.low_performers?.toLocaleString() ?? '-'} change={-(stats?.low_change ?? 0)} icon="AlertTriangle" color="bg-red-500/10 text-red-400" delay={0.2} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -101,14 +100,14 @@ export function DashboardPage() {
           <h3 className="text-lg font-semibold text-white mb-4">Performance Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
-              <Pie data={riskDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value">
-                {riskDistribution.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
+              <Pie data={performanceDist} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value">
+                {performanceDist.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
               </Pie>
               <Tooltip contentStyle={{ background: '#1e3a5f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#fff' }} />
             </PieChart>
           </ResponsiveContainer>
           <div className="flex justify-center gap-4 mt-2">
-            {riskDistribution.map((d, i) => (
+            {performanceDist.map((d, i) => (
               <div key={d.name} className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
                 <span className="text-xs text-navy-400">{d.name}</span>
@@ -125,7 +124,7 @@ export function DashboardPage() {
             <button onClick={() => navigate('/prediction')} className="text-sm text-emerald-400 hover:text-emerald-300 flex items-center gap-1">View All <ArrowRight className="w-3 h-3" /></button>
           </div>
           <div className="space-y-3">
-            {recentPredictions.map((p) => (
+            {predictions.map((p) => (
               <div key={p.id} className="flex items-center justify-between p-3 rounded-lg bg-navy-900/30 border border-white/5 hover:border-white/10 transition-all">
                 <div>
                   <p className="text-sm font-medium text-white">{p.student}</p>
@@ -148,15 +147,10 @@ export function DashboardPage() {
           <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-white mb-4">System Status</h3>
             <div className="space-y-3">
-              {[
-                { label: 'API Server', status: 'Operational', icon: CheckCircle, color: 'text-emerald-400' },
-                { label: 'ML Model', status: 'Loaded (Random Forest)', icon: Activity, color: 'text-emerald-400' },
-                { label: 'Database', status: 'Connected (MongoDB)', icon: CheckCircle, color: 'text-emerald-400' },
-                { label: 'Prediction Service', status: 'Ready', icon: CheckCircle, color: 'text-emerald-400' },
-              ].map((s) => (
+              {systemStatus.map((s) => (
                 <div key={s.label} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <s.icon className={`w-4 h-4 ${s.color}`} />
+                    <CheckCircle className={`w-4 h-4 ${s.color}`} />
                     <span className="text-sm text-navy-300">{s.label}</span>
                   </div>
                   <span className={`text-xs font-medium ${s.color}`}>{s.status}</span>

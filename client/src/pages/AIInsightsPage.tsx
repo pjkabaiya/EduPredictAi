@@ -1,45 +1,41 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Brain, Target, AlertTriangle, CheckCircle,
-  BarChart3, Lightbulb, Shield, Award,
+  BarChart3, Lightbulb, Award,
 } from 'lucide-react';
+import { api } from '../services/api';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 
-const featureImportance = [
-  { feature: 'G2 (Second Period Grade)', importance: 0.32 },
-  { feature: 'G1 (First Period Grade)', importance: 0.25 },
-  { feature: 'Number of Past Failures', importance: 0.12 },
-  { feature: 'Weekly Study Time', importance: 0.08 },
-  { feature: 'School Absences', importance: 0.06 },
-  { feature: "Mother's Education Level", importance: 0.04 },
-  { feature: "Father's Education Level", importance: 0.03 },
-  { feature: 'School Educational Support', importance: 0.03 },
-  { feature: 'Internet Access at Home', importance: 0.02 },
-  { feature: 'Student Health Status', importance: 0.02 },
-];
-
-const riskFactors = [
-  { factor: 'Multiple Past Failures (> 2)', impact: 'High', severity: 92 },
-  { factor: 'Low Study Time (< 2 hrs/week)', impact: 'High', severity: 85 },
-  { factor: 'High Absences (> 20)', impact: 'High', severity: 80 },
-  { factor: 'Low First Period Grade (< 8)', impact: 'Medium', severity: 72 },
-  { factor: 'No Internet Access at Home', impact: 'Medium', severity: 58 },
-  { factor: 'Low Parental Education', impact: 'Low', severity: 42 },
-];
-
-const recommendations = [
-  'Increase weekly study time to at least 5-10 hours for better mathematics performance',
-  'Address past academic failures through remedial support and tutoring',
-  'Maintain consistent school attendance above 95% to stay aligned with coursework',
-  'Utilise internet resources and online mathematics practice platforms',
-  'Seek school educational support programs and teacher consultations',
-  'Establish a regular study routine with focused mathematics practice',
-  'Engage family educational support for homework and learning activities',
-];
+interface InsightsData {
+  feature_importance: { feature: string; importance: number }[];
+  risk_factors: { factor: string; impact: string; severity: number }[];
+  recommendations: string[];
+  model_stats: { accuracy: number; performance_classes: number; features_analyzed: number };
+  class_balance: { High: number; Average: number; Low: number };
+}
 
 export function AIInsightsPage() {
+  const [data, setData] = useState<InsightsData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get<InsightsData>('/insights')
+      .then(setData)
+      .catch(() => setData(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <LoadingSpinner />;
+
+  const featureImportance = data?.feature_importance ?? [];
+  const riskFactors = data?.risk_factors ?? [];
+  const recommendations = data?.recommendations ?? [];
+  const modelStats = data?.model_stats;
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div>
@@ -111,17 +107,17 @@ export function AIInsightsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6 text-center">
           <Brain className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
-          <p className="text-2xl font-bold text-white">91.2%</p>
+          <p className="text-2xl font-bold text-white">{modelStats?.accuracy ?? 81.0}%</p>
           <p className="text-sm text-navy-400">Prediction Accuracy</p>
         </div>
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6 text-center">
           <Award className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
-          <p className="text-2xl font-bold text-white">3</p>
+          <p className="text-2xl font-bold text-white">{modelStats?.performance_classes ?? 3}</p>
           <p className="text-sm text-navy-400">Performance Classes</p>
         </div>
         <div className="bg-navy-800/50 border border-white/5 rounded-xl p-6 text-center">
           <Target className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
-          <p className="text-2xl font-bold text-white">33</p>
+          <p className="text-2xl font-bold text-white">{modelStats?.features_analyzed ?? 33}</p>
           <p className="text-sm text-navy-400">Features Analyzed</p>
         </div>
       </div>

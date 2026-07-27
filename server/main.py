@@ -2,7 +2,7 @@ import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routes import health, prediction, analytics, dataset, model, team, about
+from api.routes import health, prediction, analytics, dataset, model, team, about, dashboard, insights
 from utils.database import connect_db, close_db
 from utils.firebase_auth import init_firebase
 
@@ -42,3 +42,5 @@ app.include_router(dataset.router, prefix="/api", tags=["Dataset"])
 app.include_router(model.router, prefix="/api", tags=["Model"])
 app.include_router(team.router, prefix="/api", tags=["Team"])
 app.include_router(about.router, prefix="/api", tags=["About"])
+app.include_router(dashboard.router, prefix="/api", tags=["Dashboard"])
+app.include_router(insights.router, prefix="/api", tags=["Insights"])
