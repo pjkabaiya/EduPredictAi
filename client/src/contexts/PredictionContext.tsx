@@ -24,9 +24,12 @@ export function PredictionProvider({ children }: { children: ReactNode }) {
       const res = await predictionService.predict(data);
       setResult(res);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Prediction failed');
-    } finally {
-      setIsPredicting(false);
+      const msg = err instanceof Error ? err.message : 'Prediction failed';
+      if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('CORS') || msg.includes('ERR_FAILED')) {
+        setError('Cannot reach the prediction server. The backend may be starting up (Render free tier cold start takes ~30s) or there may be a network issue. Please try again.');
+      } else {
+        setError(msg);
+      }
     }
   };
 

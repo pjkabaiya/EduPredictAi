@@ -1,5 +1,4 @@
 export interface PredictionRequest {
-  school: string;
   sex: string;
   age: number;
   address: string;

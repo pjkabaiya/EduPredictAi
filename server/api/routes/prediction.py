@@ -10,7 +10,6 @@ prediction_service = PredictionService()
 
 
 class PredictionRequest(BaseModel):
-    school: str
     sex: str
     age: int
     address: str

@@ -14,12 +14,20 @@ import {
 const COLORS_PROB = ['#10b981', '#f59e0b', '#ef4444'];
 const SECTION_ICONS = { demographics: User, family: Users, academic: BookOpen, health: Heart, grades: Award } as const;
 
+const GRADE_LETTERS = [
+  { label: 'A (Excellent)', value: '18' },
+  { label: 'B (Good)', value: '15' },
+  { label: 'C (Average)', value: '12' },
+  { label: 'D (Below Average)', value: '8' },
+  { label: 'E (Poor)', value: '4' },
+  { label: 'F (Fail)', value: '1' },
+];
+
 const inputFields: {
   label: string; key: keyof PredictionRequest; type: string;
   min?: number; max?: number; step?: number; options?: { label: string; value: string }[];
   section: keyof typeof SECTION_ICONS;
 }[] = [
-  { label: 'School', key: 'school', type: 'select', options: [{ label: 'Gabriel Pereira (GP)', value: 'GP' }, { label: 'Mousinho da Silveira (MS)', value: 'MS' }], section: 'demographics' },
   { label: 'Sex', key: 'sex', type: 'select', options: [{ label: 'Male', value: 'M' }, { label: 'Female', value: 'F' }], section: 'demographics' },
   { label: 'Age', key: 'age', type: 'number', min: 15, max: 22, section: 'demographics' },
   { label: 'Address Type', key: 'address', type: 'select', options: [{ label: 'Urban', value: 'U' }, { label: 'Rural', value: 'R' }], section: 'demographics' },
@@ -53,8 +61,8 @@ const inputFields: {
   { label: 'Current Health Status', key: 'health', type: 'select', options: [{ label: '1 - Very Poor', value: '1' }, { label: '2 - Poor', value: '2' }, { label: '3 - Fair', value: '3' }, { label: '4 - Good', value: '4' }, { label: '5 - Excellent', value: '5' }], section: 'health' },
   { label: 'School Absences', key: 'absences', type: 'number', min: 0, max: 50, section: 'health' },
 
-  { label: 'First Period Grade (G1)', key: 'g1', type: 'number', min: 0, max: 20, section: 'grades' },
-  { label: 'Second Period Grade (G2)', key: 'g2', type: 'number', min: 0, max: 20, section: 'grades' },
+  { label: 'Prior Maths Grade', key: 'g1', type: 'select', options: GRADE_LETTERS, section: 'grades' },
+  { label: 'Last Maths Grade', key: 'g2', type: 'select', options: GRADE_LETTERS, section: 'grades' },
 ];
 
 const sections: { id: keyof typeof SECTION_ICONS; label: string }[] = [
@@ -66,13 +74,13 @@ const sections: { id: keyof typeof SECTION_ICONS; label: string }[] = [
 ];
 
 const defaultForm: PredictionRequest = {
-  school: 'GP', sex: 'F', age: 17, address: 'U', famsize: 'LE3',
+  sex: 'F', age: 17, address: 'U', famsize: 'LE3',
   pstatus: 'T', medu: 2, fedu: 2, mjob: 'other', fjob: 'other',
   reason: 'course', guardian: 'mother', traveltime: 2, studytime: 2,
   failures: 0, schoolsup: 'no', famsup: 'no', paid: 'no',
   activities: 'no', nursery: 'yes', higher: 'yes', internet: 'yes',
   romantic: 'no', famrel: 4, freetime: 3, goout: 3, dalc: 1,
-  walc: 1, health: 4, absences: 4, g1: 10, g2: 10,
+  walc: 1, health: 4, absences: 4, g1: 12, g2: 12,
 };
 
 export function PredictionPage() {

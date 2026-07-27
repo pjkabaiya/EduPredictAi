@@ -26,10 +26,13 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+        "http://localhost:3000",
         "https://pjkabaiya.github.io",
         "https://edupredict-ai.vercel.app",
         "https://edupredictai-d30e0.firebaseapp.com",
+        "https://edupredict-ai.onrender.com",
     ],
+    allow_origin_regex="https://.*\.github\.io",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
