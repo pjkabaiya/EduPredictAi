@@ -37,7 +37,7 @@ jobs:
         run: npm run build
         working-directory: client
         env:
-          VITE_API_URL: ${{ vars.VITE_API_URL || 'https://edupredict-ai.onrender.com/api' }}
+          VITE_API_URL: ${{ vars.VITE_API_URL || 'https://edupredict-ai-api-v90y.onrender.com/api' }}
           VITE_BASE: /EduPredictAi/
 
       - name: Setup Pages

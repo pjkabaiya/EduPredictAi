@@ -32,7 +32,7 @@ app.add_middleware(
         "https://edupredictai-d30e0.firebaseapp.com",
         "https://edupredict-ai.onrender.com",
     ],
-    allow_origin_regex="https://.*\.github\.io",
+    allow_origin_regex=r"https://.*\.github\.io",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
