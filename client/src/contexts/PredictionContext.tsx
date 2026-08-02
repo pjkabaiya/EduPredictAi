@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { PredictionRequest, PredictionResponse } from '../types';
 import { predictionService } from '../services/predictionService';
+import { predictLocal } from '../services/predictionEngine';
 
 interface PredictionContextType {
   result: PredictionResponse | null;
@@ -20,16 +21,28 @@ export function PredictionProvider({ children }: { children: ReactNode }) {
   const predict = async (data: PredictionRequest) => {
     setIsPredicting(true);
     setError(null);
+
+    try {
+      const res = await predictLocal(data);
+      setResult(res);
+      setIsPredicting(false);
+      return;
+    } catch (localErr) {
+      console.warn('Local prediction failed, falling back to server:', localErr);
+    }
+
     try {
       const res = await predictionService.predict(data);
       setResult(res);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Prediction failed';
-      if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('CORS') || msg.includes('ERR_FAILED')) {
+      if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('CORS') || msg.includes('ERR_FAILED') || msg.includes('timed out')) {
         setError('Cannot reach the prediction server. The backend may be starting up (Render free tier cold start takes ~30s) or there may be a network issue. Please try again.');
       } else {
         setError(msg);
       }
+    } finally {
+      setIsPredicting(false);
     }
   };
 
